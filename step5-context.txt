@@ -1,0 +1,229 @@
+===== data/skills.ts =====
+export type SkillGroup = {
+    id: string;
+    title: string;
+    skills: string[];
+    note?: string;
+    size: "large" | "medium" | "small";
+};
+
+export const skillGroups: SkillGroup[] = [
+    {
+        id: "ai-ml",
+        title: "AI and ML (coursework level)",
+        skills: [
+            "BFS",
+            "DFS",
+            "UCS",
+            "A*",
+            "Iterative Deepening",
+            "Bidirectional Search",
+            "Hill Climbing",
+            "Simulated Annealing",
+            "Minimax",
+            "Alpha-Beta Pruning",
+            "CSP (N-Queens)",
+            "Linear and Logistic Regression",
+            "Gradient Descent",
+            "Naive Bayes",
+            "K-Means",
+            "K-NN",
+            "Neural Networks",
+        ],
+        size: "large",
+    },
+    {
+        id: "languages",
+        title: "Languages",
+        skills: ["Python", "C++", "C", "Java", "JavaScript (basic)"],
+        size: "medium",
+    },
+    {
+        id: "web",
+        title: "Web",
+        skills: ["React", "FastAPI", "HTML5", "CSS3", "REST APIs", "Axios"],
+        size: "medium",
+    },
+    {
+        id: "databases",
+        title: "Databases",
+        skills: ["PostgreSQL", "MySQL", "SQLite"],
+        size: "small",
+    },
+    {
+        id: "desktop-games",
+        title: "Desktop and games",
+        skills: ["Qt", "SFML", "Java Swing"],
+        size: "small",
+    },
+    {
+        id: "python-libs",
+        title: "Python libraries",
+        skills: ["NumPy", "Pandas", "Matplotlib", "NetworkX", "Scikit-learn"],
+        size: "medium",
+    },
+    {
+        id: "familiar",
+        title: "Familiar with (not expert)",
+        skills: ["TensorFlow", "PyTorch", "OpenAI APIs"],
+        note: "Used for learning and small experiments, not at expert level.",
+        size: "small",
+    },
+    {
+        id: "tools",
+        title: "Tools",
+        skills: [
+            "Git and GitHub",
+            "Linux (Ubuntu, Arch)",
+            "VS Code",
+            "IntelliJ IDEA",
+            "Eclipse",
+        ],
+        size: "medium",
+    },
+    {
+        id: "concepts",
+        title: "Concepts",
+        skills: [
+            "OOP",
+            "Data Structures",
+            "Algorithms",
+            "SDLC",
+            "Software Design and Analysis",
+        ],
+        size: "medium",
+    },
+];===== data/timeline.ts =====
+export type TimelineItem = {
+    id: string;
+    title: string;
+    organization: string;
+    period: string;
+    description?: string;
+};
+
+export const education: TimelineItem[] = [
+    {
+        id: "fast-nuces",
+        title: "BS Computer Science",
+        organization: "FAST-NUCES (Karachi campus)",
+        period: "2024 to present",
+        description: "Started at the Peshawar campus, now at the Karachi campus.",
+    },
+    // TODO (owner to confirm): SSC and HSSC institutions and dates
+];
+
+export const leadership: TimelineItem[] = [
+    {
+        id: "mlsa",
+        title: "Microsoft Learn Student Ambassador",
+        organization: "Microsoft",
+        period: "2025 to 2026",
+        description:
+            "Selected for Microsoft's global student leadership program. Organizes and takes part in technical workshops and peer-learning sessions on campus.",
+    },
+    {
+        id: "ieee",
+        title: "IEEE Student Member",
+        organization: "IEEE",
+        period: "2024 to present",
+        description: "Technical events and workshops.",
+    },
+];
+
+export const certifications: TimelineItem[] = [
+    {
+        id: "digiskills",
+        title: "Video Editing, Animation and Vlogging",
+        organization: "DigiSkills DSTP 3.0 (Batch-01)",
+        period: "Aug to Nov 2025",
+    },
+];
+
+export const coursework: string[] = [
+    "OOP",
+    "Data Structures",
+    "Algorithms",
+    "Database Systems",
+    "Artificial Intelligence",
+    "Software Design and Analysis",
+    "Operating Systems",
+    "Computer Organization and Assembly Language",
+    "Theory of Automata",
+    "Discrete Structures",
+    "Linear Algebra",
+    "Probability and Statistics",
+];===== data/profile.ts =====
+export const profile = {
+    name: "Muhammad Musawar Ali Shah",
+    shortName: "Musawar Ali Shah",
+    role: "Computer Science student building full-stack apps, desktop software, and AI experiments.",
+    location: "Karachi, Pakistan",
+    university: "FAST-NUCES Karachi",
+    universityFull:
+        "FAST-NUCES (National University of Computer and Emerging Sciences)",
+    degree: "BS Computer Science",
+    email: "musawaratwork@gmail.com",
+    github: "https://github.com/SayedMusawar",
+    linkedin: "https://linkedin.com/in/muhammad-musawar-ali-shah-427128321",
+    // TODO (owner to confirm): current year of study, SSC/HSSC dates, profile photo
+} as const;===== components/ui/badge.tsx =====
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "cn"
+
+const badgeVariants = cva(
+  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        secondary:
+          "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+        destructive:
+          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+        outline:
+          "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
+        ghost:
+          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+function Badge({
+  className,
+  variant = "default",
+  render,
+  ...props
+}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  return useRender({
+    defaultTagName: "span",
+    props: mergeProps<"span">(
+      {
+        className: cn(badgeVariants({ variant }), className),
+      },
+      props
+    ),
+    render,
+    state: {
+      slot: "badge",
+      variant,
+    },
+  })
+}
+
+export { Badge, badgeVariants }
+===== app/about/page.tsx =====
+export default function Page() {
+  return <div className="container-page section-space">Coming soon</div>;
+}
+===== app/skills/page.tsx =====
+export default function Page() {
+  return <div className="container-page section-space">Coming soon</div>;
+}
