@@ -1,56 +1,142 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Hero } from "@/components/hero";
+import { ProjectCard } from "@/components/project-card";
+import { PostCard } from "@/components/post-card";
 import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { getFeaturedProjects } from "@/data/projects";
+import { getLatestPosts } from "@/lib/posts";
 import { profile } from "@/data/profile";
 
-const swatches = [
-  { name: "bg", cls: "bg-background" },
-  { name: "surface", cls: "bg-surface" },
-  { name: "border", cls: "bg-border" },
-  { name: "text", cls: "bg-foreground" },
-  { name: "muted", cls: "bg-muted-foreground" },
-  { name: "accent", cls: "bg-brand" },
-];
+const textLink =
+  "inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline";
 
 export default function Home() {
+  const featured = getFeaturedProjects();
+  const posts = getLatestPosts(3);
+
   return (
-    <div className="container-page section-space">
-      <h1 className="text-display">{profile.name}</h1>
-      <p className="mt-4 max-w-[60ch] text-lg text-muted-foreground">
-        {profile.role}
-      </p>
+    <>
+      <Hero />
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/projects" className={buttonVariants()}>
-          View projects
-        </Link>
-        <Link href="/blog" className={buttonVariants({ variant: "outline" })}>
-          Read the blog
-        </Link>
-      </div>
-
-      <section className="mt-16 rounded-xl border bg-surface p-6">
-        <h2 className="text-title">Design system check</h2>
-        <p className="mt-2 text-muted-foreground">
-          Flat colors, 1px borders, two radii. Toggle the theme in the header.
-        </p>
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-          {swatches.map((s) => (
-            <div key={s.name}>
-              <div className={`h-14 rounded-xl border ${s.cls}`} />
-              <p className="mt-1 text-sm text-muted-foreground">{s.name}</p>
-            </div>
+      {/* Featured projects: flagship first, as the large tile */}
+      <section
+        aria-labelledby="featured-heading"
+        className="container-page pb-16 md:pb-24"
+      >
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <h2 id="featured-heading" className="text-title">
+            Featured projects
+          </h2>
+          <Link href="/projects" className={textLink}>
+            All projects <ArrowRight aria-hidden className="size-4" />
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {featured.map((project, i) => (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+              size={i === 0 ? "large" : "default"}
+              className={i === 0 ? "md:col-span-2 md:row-span-2" : undefined}
+            />
           ))}
         </div>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Badge>Next.js</Badge>
-          <Badge variant="outline">TypeScript</Badge>
-          <Badge variant="secondary">Tailwind</Badge>
-        </div>
-        <pre className="mt-6 overflow-x-auto rounded-xl border bg-background p-4 font-mono text-sm">
-          {"npm run dev"}
-        </pre>
       </section>
-    </div>
+
+      {/* Visualizer teaser */}
+      <section
+        aria-labelledby="lab-heading"
+        className="container-page pb-16 md:pb-24"
+      >
+        <div className="flex flex-col gap-6 rounded-xl border bg-surface p-6 md:flex-row md:items-center md:justify-between md:p-10">
+          <div className="max-w-[60ch]">
+            <h2 id="lab-heading" className="text-title">
+              Watch a search algorithm at work
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Draw walls on a grid, choose BFS, DFS, or A*, and watch each one
+              look for a path. The grid at the top of this page is a still from
+              it.
+            </p>
+          </div>
+          <Link
+            href="/ai-lab"
+            className={cn(buttonVariants({ size: "lg" }), "shrink-0")}
+          >
+            Open the AI Lab
+          </Link>
+        </div>
+      </section>
+
+      {/* Latest posts */}
+      <section
+        aria-labelledby="posts-heading"
+        className="container-page pb-16 md:pb-24"
+      >
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <h2 id="posts-heading" className="text-title">
+            Latest posts
+          </h2>
+          {posts.length > 0 && (
+            <Link href="/blog" className={textLink}>
+              All posts <ArrowRight aria-hidden className="size-4" />
+            </Link>
+          )}
+        </div>
+        {posts.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed p-8 text-muted-foreground">
+            First posts are on the way.
+          </div>
+        )}
+      </section>
+
+      {/* Contact strip */}
+      <section
+        aria-labelledby="contact-heading"
+        className="container-page pb-16 md:pb-24"
+      >
+        <div className="rounded-xl border bg-surface p-6 md:p-10">
+          <h2 id="contact-heading" className="text-title">
+            Get in touch
+          </h2>
+          <p className="mt-3 max-w-[60ch] text-muted-foreground">
+            Questions, project ideas, or opportunities are all welcome. Send a
+            message or reach out directly.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="/contact" className={buttonVariants({ size: "lg" })}>
+              Send a message
+            </Link>
+            <a href={`mailto:${profile.email}`} className={textLink}>
+              {profile.email}
+            </a>
+
+            href={profile.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={textLink}
+            >
+            GitHub
+          </a>
+
+          href={profile.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={textLink}
+            >
+          LinkedIn
+        </a>
+      </div>
+    </div >
+      </section >
+    </>
   );
 }
