@@ -4,6 +4,9 @@ export const profile = {
     role: "Computer Science student building full-stack apps, desktop software, and AI experiments.",
     location: "Karachi, Pakistan",
     university: "FAST-NUCES Karachi",
+    universityFull:
+        "FAST-NUCES (National University of Computer and Emerging Sciences)",
+    degree: "BS Computer Science",
     email: "musawaratwork@gmail.com",
     github: "https://github.com/SayedMusawar",
     linkedin: "https://linkedin.com/in/muhammad-musawar-ali-shah-427128321",
