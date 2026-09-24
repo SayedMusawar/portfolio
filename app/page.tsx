@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { Hero } from "@/components/hero";
 import { ProjectCard } from "@/components/project-card";
@@ -9,8 +10,11 @@ import { getFeaturedProjects } from "@/data/projects";
 import { getLatestPosts } from "@/lib/posts";
 import { profile } from "@/data/profile";
 
-const textLink =
-  "inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline";
+const textLink = "inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline";
+
+function ExternalLink({ href, children }: { href: string; children: ReactNode }) {
+  return <a href={href} target="_blank" rel="noopener noreferrer" className={textLink}>{children}</a>;
+}
 
 export default function Home() {
   const featured = getFeaturedProjects();
@@ -20,15 +24,9 @@ export default function Home() {
     <>
       <Hero />
 
-      {/* Featured projects: flagship first, as the large tile */}
-      <section
-        aria-labelledby="featured-heading"
-        className="container-page pb-16 md:pb-24"
-      >
+      <section aria-labelledby="featured-heading" className="container-page pb-16 md:pb-24">
         <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 id="featured-heading" className="text-title">
-            Featured projects
-          </h2>
+          <h2 id="featured-heading" className="text-title">Featured projects</h2>
           <Link href="/projects" className={textLink}>
             All projects <ArrowRight aria-hidden className="size-4" />
           </Link>
@@ -45,40 +43,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Visualizer teaser */}
-      <section
-        aria-labelledby="lab-heading"
-        className="container-page pb-16 md:pb-24"
-      >
+      <section aria-labelledby="lab-heading" className="container-page pb-16 md:pb-24">
         <div className="flex flex-col gap-6 rounded-xl border bg-surface p-6 md:flex-row md:items-center md:justify-between md:p-10">
           <div className="max-w-[60ch]">
-            <h2 id="lab-heading" className="text-title">
-              Watch a search algorithm at work
-            </h2>
+            <h2 id="lab-heading" className="text-title">Watch a search algorithm at work</h2>
             <p className="mt-3 text-muted-foreground">
               Draw walls on a grid, choose BFS, DFS, or A*, and watch each one
-              look for a path. The grid at the top of this page is a still from
-              it.
+              look for a path. The grid at the top of this page is a still from it.
             </p>
           </div>
-          <Link
-            href="/ai-lab"
-            className={cn(buttonVariants({ size: "lg" }), "shrink-0")}
-          >
+          <Link href="/ai-lab" className={cn(buttonVariants({ size: "lg" }), "shrink-0")}>
             Open the AI Lab
           </Link>
         </div>
       </section>
 
-      {/* Latest posts */}
-      <section
-        aria-labelledby="posts-heading"
-        className="container-page pb-16 md:pb-24"
-      >
+      <section aria-labelledby="posts-heading" className="container-page pb-16 md:pb-24">
         <div className="mb-8 flex items-end justify-between gap-4">
-          <h2 id="posts-heading" className="text-title">
-            Latest posts
-          </h2>
+          <h2 id="posts-heading" className="text-title">Latest posts</h2>
           {posts.length > 0 && (
             <Link href="/blog" className={textLink}>
               All posts <ArrowRight aria-hidden className="size-4" />
@@ -98,15 +80,9 @@ export default function Home() {
         )}
       </section>
 
-      {/* Contact strip */}
-      <section
-        aria-labelledby="contact-heading"
-        className="container-page pb-16 md:pb-24"
-      >
+      <section aria-labelledby="contact-heading" className="container-page pb-16 md:pb-24">
         <div className="rounded-xl border bg-surface p-6 md:p-10">
-          <h2 id="contact-heading" className="text-title">
-            Get in touch
-          </h2>
+          <h2 id="contact-heading" className="text-title">Get in touch</h2>
           <p className="mt-3 max-w-[60ch] text-muted-foreground">
             Questions, project ideas, or opportunities are all welcome. Send a
             message or reach out directly.
@@ -115,28 +91,12 @@ export default function Home() {
             <Link href="/contact" className={buttonVariants({ size: "lg" })}>
               Send a message
             </Link>
-            <a href={`mailto:${profile.email}`} className={textLink}>
-              {profile.email}
-            </a>
-
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={textLink}
-            >
-            GitHub
-          </a>
-
-          href={profile.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={textLink}
-            >
-          LinkedIn
-        </a>
-      </div>
-    </div >
-      </section >
+            <a href={"mailto:" + profile.email} className={textLink}>{profile.email}</a>
+            <ExternalLink href={profile.github}>GitHub</ExternalLink>
+            <ExternalLink href={profile.linkedin}>LinkedIn</ExternalLink>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
