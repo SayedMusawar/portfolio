@@ -118,3 +118,23 @@ app/about/page.tsx (story, education, leadership, using data/profile.ts and data
 ### Next
 
 - Step 6: AI Lab pathfinding visualizer (BFS, DFS, A*).
+
+## Step 5: Skills and About pages (done)
+
+- Built `/skills` (bento grid from `data/skills.ts`) and `/about` (story, facts card, education, leadership, other training, coursework, contact section).
+- Files: `app/skills/page.tsx`, `app/about/page.tsx`, `components/skill-tile.tsx` (replaced), `components/timeline-section.tsx` (new).
+- Skills grid: 1 column on mobile, 2 at md, 6 at lg. Large tile spans 4 columns and 2 rows, all other tiles span 2.
+- Colors are written as `bg-[var(--surface)]` and `border-[color:var(--border)]` so no Tailwind theme mapping is needed.
+- Buttons and links are plain `Link` and `a` tags with classes, no `asChild`.
+- TODO (owner to confirm): profile photo and current year of study. Left as a code comment in `app/about/page.tsx`.
+
+### Solved problems
+
+- Lint error `react-hooks/set-state-in-effect` in `components/theme-toggle.tsx`: replaced the `useState` + `useEffect` mounted flag with `useSyncExternalStore(() => () => {}, () => true, () => false)`.
+- The gradient grep matches `"Gradient Descent"` in `data/skills.ts`. That is a skill name, not styling, so it is fine.
+- `git push` said "No configured push destination": added the remote with `git remote add origin https://github.com/SayedMusawar/portfolio.git`.
+- `git push` said "Password authentication is not supported": GitHub needs a personal access token (classic, `repo` scope) in the password prompt. Credentials are saved with `git config --global credential.helper store`. Never paste the token into files or chats.
+
+### Next
+
+- Step 6: AI Lab pathfinding visualizer (BFS, DFS, A*).
