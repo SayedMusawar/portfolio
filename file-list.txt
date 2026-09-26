@@ -20,6 +20,8 @@
 ./components/contact-form.tsx
 ./components/hero.tsx
 ./components.json
+./components/pathfinder/algorithms.ts
+./components/pathfinder/pathfinder.tsx
 ./components/pathfinder/path-graphic.tsx
 ./components/post-card.tsx
 ./components/project-card.tsx
@@ -29,6 +31,7 @@
 ./components/skill-tile.tsx
 ./components/theme-provider.tsx
 ./components/theme-toggle.tsx
+./components/timeline-section.tsx
 ./components/ui/badge.tsx
 ./components/ui/button.tsx
 ./components/ui/card.tsx
@@ -45,6 +48,7 @@
 ./.gitignore
 ./lib/posts.ts
 ./lib/utils.ts
+./mdx-components.tsx
 ./next.config.ts
 ./next-env.d.ts
 ./package.json
@@ -58,5 +62,6 @@
 ./public/window.svg
 ./README.md
 ./step5-context.txt
+./step6-context.txt
 ./tsconfig.json
 ./tsconfig.tsbuildinfo
