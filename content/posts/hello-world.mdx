@@ -1,0 +1,40 @@
+---
+title: "Hello, world"
+date: "2026-09-27"
+summary: "The first post on this blog, and a quick look at what's coming next."
+tags: ["meta"]
+draft: false
+---
+
+This is the first post on the blog. I'm using it to check the pipeline end to end: frontmatter, syntax highlighting, and the table of contents.
+
+## Why a blog
+
+I wanted a place to write about the projects I'm building and what I'm learning in my Algorithms and AI coursework.
+
+## A quick code sample
+
+A small BFS, mostly to check that syntax highlighting and the copy button both work.
+
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    queue = deque([start])
+    order = []
+
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+    return order
+```
+
+## What's next
+
+More posts will follow as projects wrap up. For now, this one is just here so the list page isn't empty.

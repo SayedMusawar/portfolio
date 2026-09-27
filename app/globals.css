@@ -185,3 +185,10 @@
     animation: none;
   }
 }
+
+
+/* Shiki (rehype-pretty-code) dual theme, pairs with the .dark class toggle */
+.dark [data-rehype-pretty-code-figure] code,
+.dark [data-rehype-pretty-code-figure] span {
+  color: var(--shiki-dark) !important;
+}
