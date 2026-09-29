@@ -35,7 +35,7 @@ export const skillGroups: SkillGroup[] = [
     {
         id: "languages",
         title: "Languages",
-        skills: ["Python", "C++", "C", "Java", "JavaScript (basic)"],
+        s`kills: ["Python", "C++", "C", "Java", "JavaScript (basic)"],
         size: "medium",
     },
     {
