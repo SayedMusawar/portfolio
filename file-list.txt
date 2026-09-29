@@ -3,6 +3,7 @@
 ./.gitignore
 ./lib/utils.ts
 ./lib/posts.ts
+./lib/contact-schema.ts
 ./next.config.ts
 ./step7-context.txt
 ./PROGRESS.md
@@ -72,3 +73,4 @@
 ./file-list.txt
 ./components.json
 ./step6-context.txt
+./step8-context.txt
