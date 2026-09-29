@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 import { runAlgorithm, type AlgorithmId, type CellPos } from "./algorithms";
 
@@ -10,7 +10,7 @@ const DEFAULT_START: CellPos = { row: 6, col: 2 };
 const DEFAULT_END: CellPos = { row: 6, col: 17 };
 
 type Tool = "wall" | "start" | "end";
-type Status = "idle" | "running" | "done";
+type RunResult = ReturnType<typeof runAlgorithm>;
 
 function emptyWalls(): boolean[][] {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(false));
@@ -20,11 +20,29 @@ function sameCell(a: CellPos, b: CellPos) {
     return a.row === b.row && a.col === b.col;
 }
 
+function cellKey(cell: CellPos) {
+    return `${cell.row},${cell.col}`;
+}
+
 const algorithmLabels: Record<AlgorithmId, string> = {
     bfs: "BFS",
     dfs: "DFS",
     astar: "A*",
 };
+
+function subscribeReducedMotion(onChange: () => void) {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+}
+
+function getReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getServerReducedMotion() {
+    return false;
+}
 
 export function Pathfinder() {
     const [walls, setWalls] = useState<boolean[][]>(emptyWalls);
@@ -33,50 +51,46 @@ export function Pathfinder() {
     const [tool, setTool] = useState<Tool>("wall");
     const [algorithm, setAlgorithm] = useState<AlgorithmId>("bfs");
     const [delay, setDelay] = useState(50);
-    const [status, setStatus] = useState<Status>("idle");
-    const [visited, setVisited] = useState<Set<string>>(new Set());
-    const [path, setPath] = useState<CellPos[]>([]);
-    const [visitedCount, setVisitedCount] = useState(0);
-    const [pathLength, setPathLength] = useState(0);
-    const [noPath, setNoPath] = useState(false);
-    const [reducedMotion, setReducedMotion] = useState(false);
+    const [run, setRun] = useState<RunResult | null>(null);
+    const [tick, setTick] = useState(0);
+    const [drawing, setDrawing] = useState<boolean | null>(null);
 
-    const drawValueRef = useRef(true);
-    const isDrawingRef = useRef(false);
-    const timeouts = useRef<number[]>([]);
+    const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, getServerReducedMotion);
 
     useEffect(() => {
-        const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-        setReducedMotion(mq.matches);
-        const onChange = () => setReducedMotion(mq.matches);
-        mq.addEventListener("change", onChange);
-        return () => mq.removeEventListener("change", onChange);
-    }, []);
-
-    useEffect(() => {
-        const onUp = () => {
-            isDrawingRef.current = false;
-        };
+        const onUp = () => setDrawing(null);
         window.addEventListener("mouseup", onUp);
         return () => window.removeEventListener("mouseup", onUp);
     }, []);
 
-    const clearTimeouts = useCallback(() => {
-        timeouts.current.forEach((id) => window.clearTimeout(id));
-        timeouts.current = [];
-    }, []);
+    useEffect(() => {
+        if (!run) return;
+        const visitedTotal = run.visitedInOrder.length;
+        const total = visitedTotal + run.path.length;
+        if (tick >= total) return;
+        const wait = tick === 0 ? 0 : tick < visitedTotal ? delay : Math.max(delay / 2, 10);
+        const id = window.setTimeout(() => setTick((t) => t + 1), wait);
+        return () => window.clearTimeout(id);
+    }, [run, tick, delay]);
 
-    const resetRun = useCallback(() => {
-        clearTimeouts();
-        setStatus("idle");
-        setVisited(new Set());
-        setPath([]);
-        setVisitedCount(0);
-        setPathLength(0);
-        setNoPath(false);
-    }, [clearTimeouts]);
+    const visitedTotal = run ? run.visitedInOrder.length : 0;
+    const pathTotal = run ? run.path.length : 0;
+    const visitedCount = Math.min(tick, visitedTotal);
+    const pathLength = Math.min(Math.max(tick - visitedTotal, 0), pathTotal);
+    const status = !run ? "idle" : tick >= visitedTotal + pathTotal ? "done" : "running";
+    const noPath = status === "done" && pathTotal === 0;
 
-    useEffect(() => clearTimeouts, [clearTimeouts]);
+    const visitedSet = new Set<string>();
+    const pathSet = new Set<string>();
+    if (run) {
+        run.visitedInOrder.slice(0, visitedCount).forEach((cell) => visitedSet.add(cellKey(cell)));
+        run.path.slice(0, pathLength).forEach((cell) => pathSet.add(cellKey(cell)));
+    }
+
+    const resetRun = () => {
+        setRun(null);
+        setTick(0);
+    };
 
     const setWallAt = (r: number, c: number, value: boolean) => {
         if (sameCell({ row: r, col: c }, start) || sameCell({ row: r, col: c }, end)) return;
@@ -105,14 +119,13 @@ export function Pathfinder() {
             return;
         }
         const nextValue = !walls[r][c];
-        drawValueRef.current = nextValue;
-        isDrawingRef.current = true;
+        setDrawing(nextValue);
         setWallAt(r, c, nextValue);
     };
 
     const handleCellEnter = (r: number, c: number) => {
-        if (tool !== "wall" || !isDrawingRef.current || status === "running") return;
-        setWallAt(r, c, drawValueRef.current);
+        if (tool !== "wall" || drawing === null || status === "running") return;
+        setWallAt(r, c, drawing);
     };
 
     const clearWalls = () => {
@@ -123,46 +136,9 @@ export function Pathfinder() {
 
     const visualize = () => {
         if (status === "running") return;
-        resetRun();
         const result = runAlgorithm(algorithm, walls, start, end);
-        setStatus("running");
-        const step = reducedMotion ? 0 : delay;
-
-        result.visitedInOrder.forEach((cell, i) => {
-            const id = window.setTimeout(() => {
-                setVisited((prev) => {
-                    const next = new Set(prev);
-                    next.add(`${cell.row},${cell.col}`);
-                    return next;
-                });
-                setVisitedCount(i + 1);
-            }, i * step);
-            timeouts.current.push(id);
-        });
-
-        const visitedTime = result.visitedInOrder.length * step;
-        const pathStep = reducedMotion ? 0 : Math.max(step / 2, 10);
-
-        if (result.path.length > 0) {
-            result.path.forEach((cell, i) => {
-                const id = window.setTimeout(() => {
-                    setPath((prev) => [...prev, cell]);
-                    setPathLength(i + 1);
-                }, visitedTime + i * pathStep);
-                timeouts.current.push(id);
-            });
-            const doneId = window.setTimeout(
-                () => setStatus("done"),
-                visitedTime + result.path.length * pathStep + 50
-            );
-            timeouts.current.push(doneId);
-        } else {
-            const doneId = window.setTimeout(() => {
-                setStatus("done");
-                setNoPath(true);
-            }, visitedTime + 50);
-            timeouts.current.push(doneId);
-        }
+        setRun(result);
+        setTick(reducedMotion ? result.visitedInOrder.length + result.path.length : 0);
     };
 
     const cellState = (r: number, c: number) => {
@@ -170,8 +146,8 @@ export function Pathfinder() {
         if (sameCell(pos, start)) return "start";
         if (sameCell(pos, end)) return "end";
         if (walls[r][c]) return "wall";
-        if (path.some((p) => sameCell(p, pos))) return "path";
-        if (visited.has(`${r},${c}`)) return "visited";
+        if (pathSet.has(cellKey(pos))) return "path";
+        if (visitedSet.has(cellKey(pos))) return "visited";
         return "empty";
     };
 
@@ -189,15 +165,7 @@ export function Pathfinder() {
             <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-1 rounded-full border border-[color:var(--border)] bg-surface p-1">
                     {(["bfs", "dfs", "astar"] as AlgorithmId[]).map((id) => (
-                        <button
-                            key={id}
-                            type="button"
-                            onClick={() => setAlgorithm(id)}
-                            className={cn(
-                                "rounded-full px-3 py-1.5 text-sm font-mono transition-colors",
-                                algorithm === id ? "bg-brand text-brand-fg" : "text-muted-foreground hover:text-foreground"
-                            )}
-                        >
+                        <button key={id} type="button" onClick={() => setAlgorithm(id)} className={cn("rounded-full px-3 py-1.5 text-sm font-mono transition-colors", algorithm === id ? "bg-brand text-brand-fg" : "text-muted-foreground hover:text-foreground")}>
                             {algorithmLabels[id]}
                         </button>
                     ))}
@@ -205,15 +173,7 @@ export function Pathfinder() {
 
                 <div className="flex gap-1 rounded-full border border-[color:var(--border)] bg-surface p-1">
                     {(["wall", "start", "end"] as Tool[]).map((t) => (
-                        <button
-                            key={t}
-                            type="button"
-                            onClick={() => setTool(t)}
-                            className={cn(
-                                "rounded-full px-3 py-1.5 text-sm transition-colors",
-                                tool === t ? "bg-brand text-brand-fg" : "text-muted-foreground hover:text-foreground"
-                            )}
-                        >
+                        <button key={t} type="button" onClick={() => setTool(t)} className={cn("rounded-full px-3 py-1.5 text-sm transition-colors", tool === t ? "bg-brand text-brand-fg" : "text-muted-foreground hover:text-foreground")}>
                             {t === "wall" ? "Draw walls" : t === "start" ? "Set start" : "Set end"}
                         </button>
                     ))}
@@ -221,77 +181,31 @@ export function Pathfinder() {
 
                 <label className="flex items-center gap-2 text-sm text-muted-foreground">
                     Speed
-                    <input
-                        type="range"
-                        min={5}
-                        max={150}
-                        step={5}
-                        value={delay}
-                        onChange={(e) => setDelay(Number(e.target.value))}
-                    />
+                    <input type="range" min={5} max={150} step={5} value={delay} onChange={(e) => setDelay(Number(e.target.value))} />
                     <span className="font-mono text-xs">{delay}ms/step</span>
                 </label>
 
-                <button
-                    type="button"
-                    onClick={visualize}
-                    disabled={status === "running"}
-                    className="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-brand-fg disabled:opacity-50"
-                >
+                <button type="button" onClick={visualize} disabled={status === "running"} className="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-brand-fg disabled:opacity-50">
                     Visualize
                 </button>
 
-                <button
-                    type="button"
-                    onClick={resetRun}
-                    className="rounded-full border border-[color:var(--border)] px-4 py-1.5 text-sm font-medium hover:bg-surface"
-                >
+                <button type="button" onClick={resetRun} className="rounded-full border border-[color:var(--border)] px-4 py-1.5 text-sm font-medium hover:bg-surface">
                     Reset
                 </button>
 
-                <button
-                    type="button"
-                    onClick={clearWalls}
-                    className="rounded-full border border-[color:var(--border)] px-4 py-1.5 text-sm font-medium hover:bg-surface"
-                >
+                <button type="button" onClick={clearWalls} className="rounded-full border border-[color:var(--border)] px-4 py-1.5 text-sm font-medium hover:bg-surface">
                     Clear walls
                 </button>
             </div>
 
-            <div
-                role="group"
-                aria-label="Pathfinding grid, 12 rows by 20 columns"
-                style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)`, touchAction: "none" }}
-                className="grid gap-px overflow-hidden rounded-xl border border-[color:var(--border)] bg-border select-none"
-            >
+            <div role="group" aria-label="Pathfinding grid, 12 rows by 20 columns" style={{ gridTemplateColumns: `repeat(${COLS}, 1fr)`, touchAction: "none" }} className="grid gap-px overflow-hidden rounded-xl border border-[color:var(--border)] bg-border select-none">
                 {Array.from({ length: ROWS }).map((_, r) =>
                     Array.from({ length: COLS }).map((_, c) => {
                         const state = cellState(r, c);
                         return (
-                            <button
-                                key={`${r}-${c}`}
-                                type="button"
-                                disabled={status === "running"}
-                                onMouseDown={() => handleCellDown(r, c)}
-                                onMouseEnter={() => handleCellEnter(r, c)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") {
-                                        e.preventDefault();
-                                        handleCellDown(r, c);
-                                    }
-                                }}
-                                aria-label={`Row ${r + 1}, column ${c + 1}, ${state}`}
-                                className={cn(
-                                    "relative aspect-square border-0 p-0 disabled:cursor-not-allowed",
-                                    cellClass[state]
-                                )}
-                            >
-                                {state === "start" && (
-                                    <span className="absolute inset-0 grid place-items-center font-mono text-[10px] text-brand-fg">S</span>
-                                )}
-                                {state === "end" && (
-                                    <span className="absolute inset-0 grid place-items-center font-mono text-[10px] text-brand-fg">E</span>
-                                )}
+                            <button key={`${r}-${c}`} type="button" disabled={status === "running"} onMouseDown={() => handleCellDown(r, c)} onMouseEnter={() => handleCellEnter(r, c)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleCellDown(r, c); } }} aria-label={`Row ${r + 1}, column ${c + 1}, ${state}`} className={cn("relative aspect-square border-0 p-0 disabled:cursor-not-allowed", cellClass[state])}>
+                                {state === "start" && <span className="absolute inset-0 grid place-items-center font-mono text-[10px] text-brand-fg">S</span>}
+                                {state === "end" && <span className="absolute inset-0 grid place-items-center font-mono text-[10px] text-brand-fg">E</span>}
                             </button>
                         );
                     })
