@@ -2,26 +2,46 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { Hero } from "@/components/hero";
+import { JsonLd } from "@/components/jsonld";
 import { ProjectCard } from "@/components/project-card";
 import { PostCard } from "@/components/post-card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getFeaturedProjects } from "@/data/projects";
 import { getLatestPosts } from "@/lib/posts";
+import { getSiteUrl } from "@/lib/site";
 import { profile } from "@/data/profile";
 
 const textLink = "inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline";
 
 function ExternalLink({ href, children }: { href: string; children: ReactNode }) {
-  return <a href={href} target="_blank" rel="noopener noreferrer" className={textLink}>{children}</a>;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={textLink}>
+      {children}
+      <span className="sr-only">(opens in a new tab)</span>
+    </a>
+  );
 }
 
 export default function Home() {
   const featured = getFeaturedProjects();
   const posts = getLatestPosts(3);
 
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.name,
+    url: getSiteUrl(),
+    description: profile.role,
+    email: `mailto:${profile.email}`,
+    address: { "@type": "PostalAddress", addressLocality: "Karachi", addressCountry: "PK" },
+    affiliation: { "@type": "CollegeOrUniversity", name: profile.universityFull },
+    sameAs: [profile.github, profile.linkedin],
+  };
+
   return (
     <>
+      <JsonLd data={personSchema} />
       <Hero />
 
       <section aria-labelledby="featured-heading" className="container-page pb-16 md:pb-24">
@@ -33,12 +53,7 @@ export default function Home() {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {featured.map((project, i) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-              size={i === 0 ? "large" : "default"}
-              className={i === 0 ? "md:col-span-2 md:row-span-2" : undefined}
-            />
+            <ProjectCard key={project.slug} project={project} size={i === 0 ? "large" : "default"} className={i === 0 ? "md:col-span-2 md:row-span-2" : undefined} />
           ))}
         </div>
       </section>

@@ -1,8 +1,8 @@
 import { getAllPosts } from "@/lib/posts";
+import { getSiteUrl } from "@/lib/site";
 
 export async function GET() {
-  // TODO: set NEXT_PUBLIC_SITE_URL to the real domain after Step 10 (deploy)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = getSiteUrl();
   const posts = getAllPosts();
 
   const items = posts
@@ -19,11 +19,13 @@ export async function GET() {
     .join("");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Musawar's blog</title>
     <link>${siteUrl}/blog</link>
-    <description>Writing on software, algorithms, and things I'm building.</description>${items}
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+    <description>Writing on software, algorithms, and things I'm building.</description>
+    <language>en</language>${items}
   </channel>
 </rss>`;
 

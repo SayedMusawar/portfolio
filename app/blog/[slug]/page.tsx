@@ -1,50 +1,71 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostSlugsForParams, getPostContent, getAdjacentPosts } from "@/lib/posts";
 import { blogMdxComponents } from "@/components/blog-mdx-components";
 import { TableOfContents } from "@/components/table-of-contents";
 import { ShareLinks } from "@/components/share-links";
+import { JsonLd } from "@/components/jsonld";
+import { getSiteUrl } from "@/lib/site";
+import { profile } from "@/data/profile";
+
+type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return getPostSlugsForParams().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostContent(slug);
   if (!post) return {};
   return {
     title: post.meta.title,
     description: post.meta.summary,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
+      type: "article",
+      siteName: profile.name,
+      url: `/blog/${slug}`,
       title: post.meta.title,
       description: post.meta.summary,
-      type: "article",
+      publishedTime: post.meta.date,
+      tags: [...post.meta.tags],
+      authors: [profile.name],
     },
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({ params }: Props) {
   const { slug } = await params;
   const post = await getPostContent(slug);
   if (!post) notFound();
 
   const { meta, headings, MDXContent } = post;
   const { prev, next } = getAdjacentPosts(slug);
-  // TODO: set NEXT_PUBLIC_SITE_URL to the real domain after Step 10 (deploy)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = getSiteUrl();
   const postUrl = `${siteUrl}/blog/${slug}`;
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: meta.title,
+    description: meta.summary,
+    datePublished: meta.date,
+    url: postUrl,
+    mainEntityOfPage: postUrl,
+    keywords: meta.tags.join(", "),
+    author: { "@type": "Person", name: profile.name, url: siteUrl },
+  };
 
   return (
     <article className="container-page section-space">
+      <JsonLd data={articleSchema} />
       <header className="mb-8 max-w-[70ch]">
         <p className="text-sm text-muted-foreground">
-          {new Date(meta.date).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            timeZone: "UTC",
-          })}
+          <time dateTime={meta.date}>
+            {new Date(meta.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}
+          </time>
           {" · "}
           {meta.readingTime}
         </p>
@@ -52,10 +73,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <ul className="mt-3 flex flex-wrap gap-2" aria-label="Tags">
           {meta.tags.map((tag) => (
             <li key={tag}>
-              <Link
-                href={`/blog/tag/${tag}`}
-                className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
-              >
+              <Link href={`/blog/tag/${tag}`} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
                 {tag}
               </Link>
             </li>
@@ -71,7 +89,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <ShareLinks url={postUrl} title={meta.title} />
           </div>
 
-          <nav className="mt-10 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:justify-between">
+          <nav aria-label="More posts" className="mt-10 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:justify-between">
             {prev ? (
               <Link href={`/blog/${prev.slug}`} className="text-sm">
                 <span className="block text-muted-foreground">Previous</span>

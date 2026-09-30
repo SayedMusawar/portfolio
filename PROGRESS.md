@@ -8,7 +8,7 @@
 - [x] Step 4: projects list with filters, detail pages
 - [x] Step 5: skills and about pages
 - [x] Step 6: AI Lab pathfinding visualizer
-- [x] Step 7: blog (MDX)
+- [x] Step 7: blog (MDX)WW
 - [x] Step 8: contact form and resume page
 - [ ] Step 9: SEO, accessibility, Lighthouse  <-- NEXT
 - [ ] Step 10: deploy to Vercel
