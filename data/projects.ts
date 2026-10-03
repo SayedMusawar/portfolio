@@ -9,7 +9,7 @@ export type Project = {
     year: number;
     stack: string[];
     highlights: string[];
-    githubUrl: string; // TODO: add repo URL. Empty string hides the button.
+    githubUrl: string; // Repo URL. Empty string hides the button.
     liveUrl?: string;
     images: string[]; // TODO: add files in /public/images/projects/
     featured: boolean;
@@ -43,7 +43,7 @@ export const projects: Project[] = [
             "Role-based access for Admin, Staff, Student, and Faculty",
             "SHA-256 password hashing and parameterized queries",
         ],
-        githubUrl: "",
+        githubUrl: "https://github.com/SayedMusawar/Lost-FoundIntelligence",
         images: [],
         featured: true,
     },
@@ -65,7 +65,8 @@ export const projects: Project[] = [
             "Layered architecture: model, repository, service, UI",
             "Enum-driven state machines",
         ],
-        githubUrl: "",
+        githubUrl:
+            "https://github.com/SayedMusawar/IT-Components-Problem-Reporting-SysteM",
         images: [],
         featured: true,
     },
@@ -87,7 +88,7 @@ export const projects: Project[] = [
             "OOP class design and inheritance",
             "Interactive Qt GUI",
         ],
-        githubUrl: "",
+        githubUrl: "https://github.com/SayedMusawar/Chess-Game",
         images: [],
         featured: true,
     },
@@ -107,7 +108,7 @@ export const projects: Project[] = [
             "Collision detection",
             "Built with SFML",
         ],
-        githubUrl: "",
+        githubUrl: "https://github.com/SayedMusawar/snake_game",
         images: [],
         featured: false,
     },
@@ -123,7 +124,7 @@ export const projects: Project[] = [
         year: 2024,
         stack: ["JavaScript", "REST API"],
         highlights: [], // TODO
-        githubUrl: "",
+        githubUrl: "https://github.com/SayedMusawar/Whether_APP",
         images: [],
         featured: false,
     },
@@ -139,7 +140,7 @@ export const projects: Project[] = [
         year: 2024,
         stack: ["C++", "Qt"],
         highlights: [], // TODO
-        githubUrl: "",
+        githubUrl: "", // No repo yet
         images: [],
         featured: false,
     },
@@ -154,7 +155,7 @@ export const projects: Project[] = [
         year: 2024,
         stack: ["HTML", "CSS"],
         highlights: [], // TODO
-        githubUrl: "",
+        githubUrl: "https://github.com/SayedMusawar/Youtube_clone",
         images: [],
         featured: false,
     },
@@ -169,7 +170,7 @@ export const projects: Project[] = [
         year: 2024,
         stack: ["HTML", "CSS"],
         highlights: [], // TODO
-        githubUrl: "",
+        githubUrl: "", // No repo yet
         images: [],
         featured: false,
     },
@@ -186,7 +187,7 @@ export const projects: Project[] = [
         year: 2024,
         stack: ["HTML/CSS", "Python"],
         highlights: [], // TODO
-        githubUrl: "",
+        githubUrl: "", // Only the calculator has a repo; the group has no single repo
         images: [],
         featured: false,
     },
