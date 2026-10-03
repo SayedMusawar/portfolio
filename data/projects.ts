@@ -1,5 +1,10 @@
 export type ProjectCategory = "Web" | "Desktop" | "Games" | "AI" | "Misc";
 
+export type ProjectImage = {
+    src: string;
+    alt: string;
+};
+
 export type Project = {
     slug: string;
     title: string;
@@ -11,7 +16,7 @@ export type Project = {
     highlights: string[];
     githubUrl: string; // Repo URL. Empty string hides the button.
     liveUrl?: string;
-    images: string[]; // TODO: add files in /public/images/projects/
+    images: ProjectImage[]; // Files live in /public/images/projects/<slug>/
     featured: boolean;
 };
 
@@ -44,7 +49,20 @@ export const projects: Project[] = [
             "SHA-256 password hashing and parameterized queries",
         ],
         githubUrl: "https://github.com/SayedMusawar/Lost-FoundIntelligence",
-        images: [],
+        images: [
+            {
+                src: "/images/projects/lost-and-found-system/01.webp",
+                alt: "Lost & Found Intelligence System sign-in screen with demo admin and student accounts",
+            },
+            {
+                src: "/images/projects/lost-and-found-system/02.webp",
+                alt: "Register Found Item form with title, description, category, location and date fields",
+            },
+            {
+                src: "/images/projects/lost-and-found-system/03.webp",
+                alt: "Student view of the item browser showing one found item with a Claim This Item button",
+            },
+        ],
         featured: true,
     },
     {
@@ -67,7 +85,28 @@ export const projects: Project[] = [
         ],
         githubUrl:
             "https://github.com/SayedMusawar/IT-Components-Problem-Reporting-SysteM",
-        images: [],
+        images: [
+            {
+                src: "/images/projects/it-problem-reporting/01.webp",
+                alt: "IT staff view listing all complaints with filters for location, equipment, status and priority",
+            },
+            {
+                src: "/images/projects/it-problem-reporting/02.webp",
+                alt: "Student form for submitting a complaint with location, equipment type, equipment ID and problem description",
+            },
+            {
+                src: "/images/projects/it-problem-reporting/03.webp",
+                alt: "IT staff actions tab for assigning priority, updating status and adding resolution notes to a complaint",
+            },
+            {
+                src: "/images/projects/it-problem-reporting/04.webp",
+                alt: "System admin reports tab showing a generated report with total, pending, in-progress and resolved counts",
+            },
+            {
+                src: "/images/projects/it-problem-reporting/05.webp",
+                alt: "System admin tab for managing IT staff accounts with create, update and delete buttons",
+            },
+        ],
         featured: true,
     },
     {
@@ -89,7 +128,24 @@ export const projects: Project[] = [
             "Interactive Qt GUI",
         ],
         githubUrl: "https://github.com/SayedMusawar/Chess-Game",
-        images: [],
+        images: [
+            {
+                src: "/images/projects/chess-game/01.webp",
+                alt: "Chess board at the start of a game with White to move",
+            },
+            {
+                src: "/images/projects/chess-game/02.webp",
+                alt: "Chess board during play with a selected pawn and its legal move highlighted",
+            },
+            {
+                src: "/images/projects/chess-game/03.webp",
+                alt: "Chess board with a status bar message saying Black is in check",
+            },
+            {
+                src: "/images/projects/chess-game/04.webp",
+                alt: "Game over dialog announcing checkmate with White as the winner",
+            },
+        ],
         featured: true,
     },
     {

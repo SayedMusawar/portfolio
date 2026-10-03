@@ -2,25 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Boxes,
-  Brain,
-  ExternalLink,
-  Gamepad2,
-  Globe,
-  Monitor,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Boxes, Brain, ExternalLink, Gamepad2, Globe, Monitor, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  getAdjacentProjects,
-  getProject,
-  projects,
-  type ProjectCategory,
-} from "@/data/projects";
+import { getAdjacentProjects, getProject, projects, type ProjectCategory } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -33,21 +18,15 @@ const icons: Record<ProjectCategory, LucideIcon> = {
   Misc: Boxes,
 };
 
-const backLink =
-  "inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground";
+const backLink = "inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground";
 const heading = "text-4xl font-semibold leading-[1.1] md:text-5xl";
-const frame =
-  "relative aspect-video overflow-hidden rounded-xl border bg-surface";
-const placeholder =
-  "flex h-56 flex-col items-center justify-center gap-3 rounded-xl border bg-surface text-muted-foreground md:h-72";
-const navCard =
-  "flex flex-col gap-1 rounded-xl border bg-surface p-5 transition-shadow duration-150 hover:shadow-sm";
+const frame = "relative aspect-video overflow-hidden rounded-xl border bg-surface";
+const placeholder = "flex h-56 flex-col items-center justify-center gap-3 rounded-xl border bg-surface text-muted-foreground md:h-72";
+const navCard = "flex flex-col gap-1 rounded-xl border bg-surface p-5 transition-shadow duration-150 hover:shadow-sm";
 const navLabel = "flex items-center gap-2 text-sm text-muted-foreground";
 const navTitle = "font-heading text-lg font-semibold";
-const asideClass =
-  "h-fit rounded-xl border bg-surface p-5 lg:sticky lg:top-24";
-const listClass =
-  "mt-4 flex max-w-[65ch] list-disc flex-col gap-2 pl-5 marker:text-muted-foreground";
+const asideClass = "h-fit rounded-xl border bg-surface p-5 lg:sticky lg:top-24";
+const listClass = "mt-4 flex max-w-[65ch] list-disc flex-col gap-2 pl-5 marker:text-muted-foreground";
 const primaryLink = buttonVariants({ size: "lg" });
 const outlineLink = buttonVariants({ variant: "outline", size: "lg" });
 
@@ -84,26 +63,18 @@ export default async function ProjectPage({ params }: Props) {
           <span>{project.year}</span>
         </p>
         <h1 className={cn(heading, "mt-3")}>{project.title}</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          {project.summary}
-        </p>
+        <p className="mt-4 text-lg text-muted-foreground">{project.summary}</p>
 
         {(project.githubUrl || project.liveUrl) && (
           <div className="mt-6 flex flex-wrap gap-3">
             {project.githubUrl && (
-              <a href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={primaryLink}>
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className={primaryLink}>
                 View on GitHub
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
             )}
             {project.liveUrl && (
-              <a href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={outlineLink}>
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className={outlineLink}>
                 Live site
                 <ExternalLink aria-hidden />
                 <span className="sr-only">(opens in a new tab)</span>
@@ -119,13 +90,9 @@ export default async function ProjectPage({ params }: Props) {
         </h2>
         {project.images.length > 0 ? (
           <ul className="grid gap-4 sm:grid-cols-2">
-            {project.images.map((src, i) => (
-              <li key={src} className={frame}>
-                <Image src={src}
-                  alt={`${project.title} screenshot ${i + 1}`}
-                  fill
-                  sizes="(min-width: 1024px) 550px, 100vw"
-                  className="object-cover" />
+            {project.images.map((image) => (
+              <li key={image.src} className={frame}>
+                <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 550px, 100vw" className="object-cover" />
               </li>
             ))}
           </ul>
@@ -191,8 +158,7 @@ export default async function ProjectPage({ params }: Props) {
       </div>
 
       {prev && next && (
-        <nav aria-label="More projects"
-          className="mt-16 grid gap-4 border-t pt-8 sm:grid-cols-2">
+        <nav aria-label="More projects" className="mt-16 grid gap-4 border-t pt-8 sm:grid-cols-2">
           <Link href={`/projects/${prev.slug}`} className={navCard}>
             <span className={navLabel}>
               <ArrowLeft aria-hidden className="size-4" />
@@ -200,8 +166,7 @@ export default async function ProjectPage({ params }: Props) {
             </span>
             <span className={navTitle}>{prev.title}</span>
           </Link>
-          <Link href={`/projects/${next.slug}`}
-            className={cn(navCard, "sm:items-end sm:text-right")}>
+          <Link href={`/projects/${next.slug}`} className={cn(navCard, "sm:items-end sm:text-right")}>
             <span className={navLabel}>
               Next project
               <ArrowRight aria-hidden className="size-4" />
