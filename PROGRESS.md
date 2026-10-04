@@ -8,10 +8,25 @@
 - [x] Step 4: projects list with filters, detail pages
 - [x] Step 5: skills and about pages
 - [x] Step 6: AI Lab pathfinding visualizer
-- [x] Step 7: blog (MDX)WW
+- [x] Step 7: blog (MDX)
 - [x] Step 8: contact form and resume page
-- [ ] Step 9: SEO, accessibility, Lighthouse  <-- NEXT
-- [ ] Step 10: deploy to Vercel
+- [x] Step 9: SEO and accessibility code (metadata, sitemap, robots, JSON-LD, OG image, a11y fixes). Lighthouse scores NOT measured yet
+- [ ] Feature phase (see below)  <-- CURRENT
+- [ ] Step 10: deploy to Vercel (after the feature phase, or earlier if the owner decides)
+
+## Feature phase (extras the owner chose, built one at a time, before or around Step 10)
+- [x] F1a: GitHub links in data/projects.ts (6 of 9 projects have a repo; todo-app, spotify-clone, small-projects have none)
+- [~] F1b: screenshots. Done for lost-and-found-system (3), it-problem-reporting (5), chess-game (4). Still missing: snake, weather, todo, youtube clone, spotify clone, small projects
+- [ ] F2: print-friendly /resume (Ctrl+P gives a clean PDF). Resume PDF itself was uploaded by the owner to public/resume/
+- [ ] F3: playable Snake and Chess on the site by compiling the owner's EXISTING C++ to WebAssembly. NO TypeScript rewrite (owner decision 2026-10-04). Plan in NEXT_STEP_GAMES_AND_LOST_FOUND.md
+- [ ] F4: live link to the Lost & Found app (plan in the same file)
+- [ ] F5: command palette (Ctrl/Cmd+K)
+- [ ] F6: live GitHub activity section (server fetch, cached)
+- [ ] F7: theme toggle with circular reveal (View Transitions API, graceful fallback)
+- [ ] F8: AI Lab expansion (compare mode, UCS/Dijkstra, bidirectional, maze generator, touch support, minimax with alpha-beta, N-Queens, K-Means)
+- [ ] F9: case-study content on project pages, 2 or 3 real blog posts
+- [ ] F10: Vercel Analytics and Speed Insights, custom 404, /now page
+- Lighthouse: baseline not run yet. Run on a production build (npm run build, npm start) before and after the feature phase.
 
 ## Environment
 - Ubuntu, Node LTS via nvm, VS Code, npm
@@ -19,6 +34,8 @@
 - Dev server: npm run dev (if port 3000 is busy: pkill -f "next dev")
 - Steps 0-8 committed to git, remote origin is https://github.com/SayedMusawar/portfolio.git
 - Secrets live in .env.local (git-ignored): RESEND_API_KEY. Restart the dev server after editing it.
+- Site URL comes from lib/site.ts getSiteUrl(): NEXT_PUBLIC_SITE_URL, else https://$VERCEL_PROJECT_PRODUCTION_URL, else http://localhost:3000.
+- Helper scripts live in scripts/ (prepare-screenshots.sh, make-context.sh). Never put secrets or .env files in context bundles.
 
 ## Files that exist and work
 - app/layout.tsx, app/page.tsx (home), app/globals.css (has a shiki dual-theme block appended at the end, Step 7)
@@ -35,6 +52,11 @@
 - components/pathfinder/: path-graphic.tsx, algorithms.ts, pathfinder.tsx
 - components/ui/: shadcn files (button.tsx is hand-written, see below)
 - data/: profile.ts, projects.ts (getProject, getFeaturedProjects, getAdjacentProjects, projectCategories), skills.ts, timeline.ts
+- Step 9 additions: lib/site.ts, lib/og-image.tsx, app/opengraph-image.tsx, app/twitter-image.tsx, app/robots.ts,
+  app/sitemap.ts (now filled in), components/json-ld.tsx
+- scripts/prepare-screenshots.sh (ImageMagick: raw screenshots to 16:9 WebP in public/images/projects/<slug>/NN.webp)
+- public/images/projects/{lost-and-found-system,it-problem-reporting,chess-game}/*.webp
+- public/resume/Musawar_Ali_Shah_Resume.pdf (uploaded by the owner)
 
 ## Decisions that differ from the brief
 - CSS variables keep the brief's names (--bg, --surface, --border, --text, --muted, --accent, --accent-fg).
@@ -81,6 +103,24 @@
 - The resume page keeps its own copy of the skill groups from the brief (keep in sync with data/skills.ts).
 - Error text uses text-red-600 / dark:text-red-400 (no red token in the design system).
 
+- Project images are objects: Project.images is ProjectImage[] = { src, alt }[] (alt text per image, written from the real screenshot).
+  Image files live in public/images/projects/<slug>/01.webp, 02.webp, ...
+- ProjectCard cover is a full 16:9 frame (aspect-video, object-cover object-top). Cards without images show the category icon in the same frame.
+  The GitHub button shows only on the detail page, not on cards (a card is already a link; no link inside a link).
+- Screenshots are padded to 16:9 at native size (not stretched, not upscaled). The Lost & Found login screenshot has the
+  "developed by" block (roll numbers) blurred on purpose.
+- OG and Twitter images are generated in code (app/opengraph-image.tsx, app/twitter-image.tsx via lib/og-image.tsx, flat colors, default font).
+  public/og-default.png is no longer needed.
+- Layout metadata: metadataBase from getSiteUrl(), canonical "./" (resolves per page), RSS alternate link, theme-color viewport.
+  Layout openGraph has only type, siteName, locale (no title), so pages without their own openGraph fall back to <title>. Blog posts set their own.
+- JetBrains Mono is loaded with preload: false (only used for code).
+- main has id="main", tabIndex={-1} and inline outline none so the skip link target works.
+- Security headers are in next.config.ts (nosniff, referrer policy, frame options, permissions policy). No CSP on purpose (inline scripts from Next and next-themes).
+- JSON-LD: Person on the home page, BlogPosting on blog posts, via components/json-ld.tsx.
+- Games on the site (planned, not built): the owner's existing C++ games are compiled to WebAssembly (Emscripten) and embedded via an iframe
+  that loads only after a Play click. Chess uses Qt for WebAssembly. Snake (SFML) needs a browser-capable graphics layer (SMK, VRSFML, SDL2 or a thin shim),
+  chosen after inspecting the code. Owner does NOT want a TypeScript rewrite. Label honestly: say "C++ compiled to WebAssembly" and name any adapted layer.
+
 ## Problems already solved (do not repeat)
 - Lone ">" on its own line in JSX caused "Unexpected token" parse errors (layout.tsx, page.tsx).
   Keep JSX opening tags compact, and avoid very long className strings on one line.
@@ -107,6 +147,11 @@
   git config --global credential.helper store. Never paste the token into files or chats.
 - Env files (.env.local) are read only at startup: restart npm run dev after changing them.
 
+- Images showed alt text and the dev log printed 404 for /images/projects/...: the .webp files did not exist in public/images/projects.
+  Fix: run bash scripts/prepare-screenshots.sh (needs ImageMagick and the raw screenshots in ~/Pictures/Screenshots) or unzip a prepared zip into public/images.
+  Check with: ls -R public/images/projects
+- Module not found '@/components/json-ld': the new file had not been created. Check the file exists with the exact name before importing.
+
 ## Rules that never change
 - No gradients anywhere (check: grep -rniE "gradient" app components data lib; ignore skill-name matches)
 - Two radii only, 1px borders instead of shadows (one subtle hover shadow on cards)
@@ -115,27 +160,29 @@
 - Give complete files with the path above each one, and say whether each is a file or a terminal command.
 - Write every JSX opening tag (name + all attributes) on one line, never split across lines.
 - Before committing a step: npx tsc --noEmit and npm run lint must both be clean.
+- Never share or commit secrets (.env.local, API keys, tokens, database URLs with passwords).
+- Never present a rewrite as the original code (see Decisions, games).
+- Do not rewrite the owner's C++ games in TypeScript or any other language. Connect the existing code (WebAssembly). If blocked, report the exact blocker.
 
 ## Known TODOs (owner to fill in)
-- githubUrl for each project, screenshots (files in public/images/projects/ and paths in the images array),
-  highlights for the small projects
-- Year of study, SSC/HSSC details, profile photo, resume PDF (public/resume/Musawar_Ali_Shah_Resume.pdf), og-default.png
-- NEXT_PUBLIC_SITE_URL env var: not set yet, defaults to http://localhost:3000. Set it to the real
-  domain after Step 10 (deploy) - used by app/rss.xml/route.ts and the share links on blog posts.
+- Screenshots for snake, weather, todo, youtube clone, spotify clone, small projects (files in public/images/projects/<slug>/ and entries in data/projects.ts)
+- Lost & Found: claim review and digital receipt screenshots (dummy data only), if the owner wants them
+- highlights for the small projects (data/projects.ts has TODO comments)
+- Open question 1: year. data/projects.ts says 2025 for lost-and-found-system and it-problem-reporting, but the app screenshots show Spring 2026 / 2026 dates. Owner to confirm.
+- Open question 2: the Lost & Found app credits a co-developer (Muhammad Ahmed Asim). Owner to say whether the project text should mention a team.
+- Year of study, SSC/HSSC details, profile photo
+- NEXT_PUBLIC_SITE_URL: set to the real domain after Step 10 (the Vercel fallback works until then).
 - RESEND_API_KEY must also be added in Vercel (Settings, Environment Variables) at Step 10.
-- Pathfinder: drag-to-draw walls only works with a mouse; touch devices can tap one cell at a time.
+- GitHub profile bio is out of date (says FAST-NUCES Peshawar, different email, portfolio "coming soon"). Owner may update before deploying.
+- Weather repo is named Whether_APP on GitHub (typo). Link works; if renamed, update githubUrl in data/projects.ts.
+- Pathfinder: drag-to-draw walls only works with a mouse; touch devices can tap one cell at a time. (Planned in F8.)
 
 ## Current step notes
-Step 9 not started. From the brief (section 7, SEO and meta) and section 2 (hard rules):
-- `metadata` per page (title, description), Open Graph image (public/og-default.png does not exist yet),
-  sitemap.ts (exists, verify it covers projects, blog posts and tags), robots.txt or app/robots.ts (not created yet),
-  JSON-LD Person schema on the home page, metadataBase from NEXT_PUBLIC_SITE_URL.
-- Accessibility pass: visible keyboard focus everywhere, semantic HTML, alt text, contrast at least WCAG AA
-  in both themes (including text-muted-foreground and error red), prefers-reduced-motion, tab order, skip link.
-- Lighthouse 90+ on Performance, Accessibility, Best Practices, SEO: run on a production build
-  (npm run build then npm start), not the dev server.
-- Optional if spam appears: rate limiting on app/api/contact/route.ts.
-- Files to send for this step are collected in step9-context.txt.
+Current focus: the feature phase. Next in line: F2 (print-friendly resume), then F3 and F4 using NEXT_STEP_GAMES_AND_LOST_FOUND.md.
+To start F2 the assistant needs: cat app/resume/page.tsx and grep -n "print" app/globals.css.
+Lighthouse has not been run yet; do it on a production build and send the failing item names.
+How to give the assistant context in a new chat: attach PORTFOLIO_BUILD_BRIEF.md, SESSION_STARTER.md, PROGRESS.md,
+NEXT_STEP_GAMES_AND_LOST_FOUND.md, and the files produced by: bash scripts/make-context.sh (next-context.txt and file-list.txt).
 
 ## Step summaries (5 to 8)
 - Step 5: /skills bento grid (1 col mobile, 2 at md, 6 at lg; large tile spans 4 cols and 2 rows) and /about.
@@ -147,3 +194,7 @@ Step 9 not started. From the brief (section 7, SEO and meta) and section 2 (hard
   share links, prev/next, code block copy button, RSS, sample post). See Decisions for the MDX approach.
 - Step 8: contact form (components/contact-form.tsx), API route, contact page, resume page. Also fixed the two
   lint errors in pathfinder.tsx. See Decisions for details.
+- Step 9: lib/site.ts (getSiteUrl), metadataBase and canonical in layout, generated OG and Twitter image, robots.ts, sitemap.ts
+  (static pages, projects, posts, tags), JSON-LD (Person, BlogPosting), security headers, footer tap targets, labelled blog nav,
+  JetBrains Mono preload off.
+- Feature phase so far: GitHub links and screenshots for three projects, per-image alt text, 16:9 project cards.
