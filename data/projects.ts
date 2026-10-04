@@ -16,6 +16,7 @@ export type Project = {
     highlights: string[];
     githubUrl: string; // Repo URL. Empty string hides the button.
     liveUrl?: string;
+    playUrl?: string; // Internal page where the game runs in the browser.
     images: ProjectImage[]; // Files live in /public/images/projects/<slug>/
     featured: boolean;
 };
@@ -40,7 +41,7 @@ export const projects: Project[] = [
             "It supports item registration and search, claim submission and review, digital receipts, and in-app notifications, with separate access levels for Admin, Staff, Student, and Faculty users.",
         ],
         category: "Web",
-        year: 2025,
+        year: 2026,
         stack: ["React", "FastAPI", "PostgreSQL", "Axios"],
         highlights: [
             "Replaced a manual register-based process at the university",
@@ -49,6 +50,7 @@ export const projects: Project[] = [
             "SHA-256 password hashing and parameterized queries",
         ],
         githubUrl: "https://github.com/SayedMusawar/Lost-FoundIntelligence",
+        liveUrl: "https://lost-found-intelligence.vercel.app/",
         images: [
             {
                 src: "/images/projects/lost-and-found-system/01.webp",
@@ -75,7 +77,7 @@ export const projects: Project[] = [
             "Users submit complaints, staff assign priority and update status, and the system produces reports. The code follows a layered architecture and uses enum-driven state machines.",
         ],
         category: "Desktop",
-        year: 2025,
+        year: 2026,
         stack: ["Java", "Swing", "OOP"],
         highlights: [
             "Role-based workflows for Students, Faculty, IT Staff, and Admins",
@@ -128,6 +130,7 @@ export const projects: Project[] = [
             "Interactive Qt GUI",
         ],
         githubUrl: "https://github.com/SayedMusawar/Chess-Game",
+        playUrl: "/play/chess",
         images: [
             {
                 src: "/images/projects/chess-game/01.webp",

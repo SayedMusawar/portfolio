@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Boxes, Brain, ExternalLink, Gamepad2, Globe, Monitor, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Boxes, Brain, ExternalLink, Gamepad2, Globe, Monitor, Play, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getAdjacentProjects, getProject, projects, type ProjectCategory } from "@/data/projects";
@@ -65,10 +65,16 @@ export default async function ProjectPage({ params }: Props) {
         <h1 className={cn(heading, "mt-3")}>{project.title}</h1>
         <p className="mt-4 text-lg text-muted-foreground">{project.summary}</p>
 
-        {(project.githubUrl || project.liveUrl) && (
+        {(project.playUrl || project.githubUrl || project.liveUrl) && (
           <div className="mt-6 flex flex-wrap gap-3">
+            {project.playUrl && (
+              <Link href={project.playUrl} className={primaryLink}>
+                <Play aria-hidden />
+                Play in browser
+              </Link>
+            )}
             {project.githubUrl && (
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className={primaryLink}>
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className={project.playUrl ? outlineLink : primaryLink}>
                 View on GitHub
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
