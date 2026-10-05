@@ -1,5 +1,11 @@
 # Next step: playable games and the Lost & Found link
 
+> STATUS 2026-10-05 (end of the Chess chat): Part A (Chess) is DONE and on origin/main (commit 94ccfc5), including the site integration from Part C
+> (app/play, components/games/wasm-game-frame.tsx, public/games/chess, playUrl, sitemap). A small markup fix and two local commits still need pushing.
+> Part D (Lost & Found): the Chess commit message says the live link was added; the owner must verify the URL (case 1 below).
+> Remaining: Part B (Snake) and Part C for Snake only (reuse the existing frame, add app/play/snake/page.tsx, playUrl, sitemap, /play card).
+> Snake details and the open decisions are in F3_SNAKE_STATE.md. The Chess steps below are kept for reference only. Paths: Chess clone ~/Chess-Game-repo, build ~/chess-wasm-build.
+
 Features F3 (playable Snake and Chess) and F4 (Lost & Found live link) from PROGRESS.md.
 OWNER DECISION (2026-10-04): no rewrite in TypeScript or any other language. The existing C++ games are connected to the site (WebAssembly).
 Written 2026-10-04. Read PROGRESS.md and PORTFOLIO_BUILD_BRIEF.md first. All portfolio rules still apply
