@@ -18,8 +18,8 @@
 - [x] F1a: GitHub links in data/projects.ts (6 of 9 projects have a repo; todo-app, spotify-clone, small-projects have none)
 - [~] F1b: screenshots. Done for lost-and-found-system (3), it-problem-reporting (5), chess-game (4). Still missing: snake, weather, todo, youtube clone, spotify clone, small projects
 - [ ] F2: print-friendly /resume (Ctrl+P gives a clean PDF). Resume PDF itself was uploaded by the owner to public/resume/
-- [ ] F3: playable Snake and Chess on the site by compiling the owner's EXISTING C++ to WebAssembly. NO TypeScript rewrite (owner decision 2026-10-04). Plan in NEXT_STEP_GAMES_AND_LOST_FOUND.md
-- [ ] F4: live link to the Lost & Found app (plan in the same file)
+- [x] F3: playable Chess (Qt for WebAssembly) and Snake (SDL2 compatibility header, emscripten_set_main_loop, high score kept in the browser via IDBFS) on /play. Existing C++ compiled to WebAssembly, no rewrite. Both tested and pushed (2026-10-05)
+- [x] F4: live link to the Lost & Found app (https://lost-found-intelligence.vercel.app/), checked in a private window: working app with dummy demo accounts only
 - [ ] F5: command palette (Ctrl/Cmd+K)
 - [ ] F6: live GitHub activity section (server fetch, cached)
 - [ ] F7: theme toggle with circular reveal (View Transitions API, graceful fallback)
@@ -117,9 +117,11 @@
 - main has id="main", tabIndex={-1} and inline outline none so the skip link target works.
 - Security headers are in next.config.ts (nosniff, referrer policy, frame options, permissions policy). No CSP on purpose (inline scripts from Next and next-themes).
 - JSON-LD: Person on the home page, BlogPosting on blog posts, via components/json-ld.tsx.
-- Games on the site (planned, not built): the owner's existing C++ games are compiled to WebAssembly (Emscripten) and embedded via an iframe
+- Games on the site (built, Chess and Snake): the owner's existing C++ games are compiled to WebAssembly (Emscripten) and embedded via an iframe
   that loads only after a Play click. Chess uses Qt for WebAssembly. Snake (SFML) needs a browser-capable graphics layer (SMK, VRSFML, SDL2 or a thin shim),
   chosen after inspecting the code. Owner does NOT want a TypeScript rewrite. Label honestly: say "C++ compiled to WebAssembly" and name any adapted layer.
+
+- Snake web build: web/sfml_web.hpp (SDL2 look-alike of the SFML classes Snake uses, only under #ifdef __EMSCRIPTEN__), web/shell.html (flat-color page, on-screen buttons for phones, IDBFS mount for highscore), web/build.sh, bundled DejaVuSans-Bold.ttf with its license in the Snake repo. main.cpp builds with real SFML on the desktop and with Emscripten for the browser. Snake page label says the graphics and input layer was adapted (SDL2).
 
 ## Problems already solved (do not repeat)
 - Lone ">" on its own line in JSX caused "Unexpected token" parse errors (layout.tsx, page.tsx).
@@ -178,7 +180,7 @@
 - Pathfinder: drag-to-draw walls only works with a mouse; touch devices can tap one cell at a time. (Planned in F8.)
 
 ## Current step notes
-Current focus: the feature phase. Next in line: F2 (print-friendly resume), then F3 and F4 using NEXT_STEP_GAMES_AND_LOST_FOUND.md.
+Current focus: the feature phase. F3 and F4 are done. Next in line: F2 (print-friendly resume), then F5 onward. Still owed: Lighthouse baseline, Snake screenshot, Chess leftovers (fool's-mate check, wasm transfer size, phone layout).
 To start F2 the assistant needs: cat app/resume/page.tsx and grep -n "print" app/globals.css.
 Lighthouse has not been run yet; do it on a production build and send the failing item names.
 How to give the assistant context in a new chat: attach PORTFOLIO_BUILD_BRIEF.md, SESSION_STARTER.md, PROGRESS.md,
