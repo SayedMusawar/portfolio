@@ -168,6 +168,7 @@ export const projects: Project[] = [
             "Built with SFML",
         ],
         githubUrl: "https://github.com/SayedMusawar/snake_game",
+        playUrl: "/play/snake",
         images: [],
         featured: false,
     },

@@ -7,7 +7,6 @@ export const metadata: Metadata = {
     description: "Games I wrote in C++, playable in your browser.",
 };
 
-const card = "flex flex-col gap-2 rounded-xl border bg-surface p-5";
 const linkCard = "flex flex-col gap-2 rounded-xl border bg-surface p-5 transition-shadow duration-150 hover:shadow-sm";
 
 export default function PlayPage() {
@@ -25,11 +24,11 @@ export default function PlayPage() {
                     </Link>
                 </li>
                 <li>
-                    <div className={card}>
+                    <Link href="/play/snake" className={linkCard}>
                         <Gamepad2 aria-hidden className="size-8 text-muted-foreground" />
                         <span className="font-heading text-lg font-semibold">Snake</span>
-                        <span className="text-muted-foreground">Coming soon.</span>
-                    </div>
+                        <span className="text-muted-foreground">C++ and SFML, with a browser graphics layer.</span>
+                    </Link>
                 </li>
             </ul>
         </section>

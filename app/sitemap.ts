@@ -3,7 +3,7 @@ import { getSiteUrl } from "@/lib/site";
 import { projects } from "@/data/projects";
 import { getAllPosts } from "@/lib/posts";
 
-const staticRoutes = ["", "/projects", "/play", "/play/chess", "/skills", "/ai-lab", "/blog", "/about", "/resume", "/contact"];
+const staticRoutes = ["", "/projects", "/play", "/play/chess", "/play/snake", "/skills", "/ai-lab", "/blog", "/about", "/resume", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const siteUrl = getSiteUrl();
