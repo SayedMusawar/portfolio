@@ -1,0 +1,107 @@
+/* Print styles. Loaded after globals.css. Black on white, no site chrome, whatever the theme. */
+.print-only {
+    display: none;
+}
+
+@page {
+    size: auto;
+    margin: 16mm;
+}
+
+@media print {
+    :root,
+    html.dark {
+        --bg: #ffffff;
+        --surface: #ffffff;
+        --border: #000000;
+        --text: #000000;
+        --muted: #333333;
+        --accent: #000000;
+        --accent-fg: #ffffff;
+    }
+
+    html,
+    body {
+        background: #ffffff;
+        color: #000000;
+    }
+
+    header:not(.resume-head),
+    footer,
+    .skip-link,
+    .screen-only {
+        display: none !important;
+    }
+
+    .print-only {
+        display: inline;
+    }
+
+    p.print-only {
+        display: block;
+    }
+
+    .resume {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        gap: 14pt;
+        font-size: 10pt;
+        line-height: 1.4;
+    }
+
+    .resume h1 {
+        font-size: 24pt;
+        line-height: 1.1;
+    }
+
+    .resume h2 {
+        font-size: 12pt;
+        padding-bottom: 2pt;
+        border-bottom: 0.75pt solid #000000;
+        break-after: avoid;
+    }
+
+    .resume h3 {
+        font-size: 11pt;
+        break-after: avoid;
+    }
+
+    .resume-head {
+        gap: 4pt;
+    }
+
+    .resume-head p {
+        max-width: none;
+        font-size: 10pt;
+    }
+
+    .resume-head ul {
+        gap: 2pt 14pt;
+    }
+
+    .resume-section {
+        border-top: 0;
+        padding-top: 0;
+        gap: 6pt;
+    }
+
+    .resume-entry {
+        break-inside: avoid;
+    }
+
+    .resume a {
+        color: #000000;
+        text-decoration: none;
+    }
+
+    .resume dl > div {
+        flex-direction: row;
+        gap: 10pt;
+    }
+
+    .resume dt {
+        width: 120pt;
+        flex-shrink: 0;
+    }
+}
