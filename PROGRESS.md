@@ -57,6 +57,7 @@
 - scripts/prepare-screenshots.sh (ImageMagick: raw screenshots to 16:9 WebP in public/images/projects/<slug>/NN.webp)
 - public/images/projects/{lost-and-found-system,it-problem-reporting,chess-game}/*.webp
 - public/resume/Musawar_Ali_Shah_Resume.pdf (uploaded by the owner)
+- Games: components/games/wasm-game-frame.tsx, app/play/page.tsx, app/play/chess/page.tsx, app/play/snake/page.tsx, public/games/chess/, public/games/snake/, playUrl in data/projects.ts, /play entries in app/sitemap.ts
 
 ## Decisions that differ from the brief
 - CSS variables keep the brief's names (--bg, --surface, --border, --text, --muted, --accent, --accent-fg).
@@ -119,7 +120,7 @@
 - JSON-LD: Person on the home page, BlogPosting on blog posts, via components/json-ld.tsx.
 - Games on the site (built, Chess and Snake): the owner's existing C++ games are compiled to WebAssembly (Emscripten) and embedded via an iframe
   that loads only after a Play click. Chess uses Qt for WebAssembly. Snake (SFML) needs a browser-capable graphics layer (SMK, VRSFML, SDL2 or a thin shim),
-  chosen after inspecting the code. Owner does NOT want a TypeScript rewrite. Label honestly: say "C++ compiled to WebAssembly" and name any adapted layer.
+  chosen: a thin SDL2 compatibility header (see the Snake web build note below). Owner does NOT want a TypeScript rewrite. Label honestly: say "C++ compiled to WebAssembly" and name any adapted layer.
 
 - Snake web build: web/sfml_web.hpp (SDL2 look-alike of the SFML classes Snake uses, only under #ifdef __EMSCRIPTEN__), web/shell.html (flat-color page, on-screen buttons for phones, IDBFS mount for highscore), web/build.sh, bundled DejaVuSans-Bold.ttf with its license in the Snake repo. main.cpp builds with real SFML on the desktop and with Emscripten for the browser. Snake page label says the graphics and input layer was adapted (SDL2).
 
@@ -170,7 +171,7 @@
 - Screenshots for snake, weather, todo, youtube clone, spotify clone, small projects (files in public/images/projects/<slug>/ and entries in data/projects.ts)
 - Lost & Found: claim review and digital receipt screenshots (dummy data only), if the owner wants them
 - highlights for the small projects (data/projects.ts has TODO comments)
-- Open question 1: year. data/projects.ts says 2025 for lost-and-found-system and it-problem-reporting, but the app screenshots show Spring 2026 / 2026 dates. Owner to confirm.
+- Open question 1: year. data/projects.ts now says 2026 for lost-and-found-system and it-problem-reporting (matches the app screenshots), but the brief says 2025. Owner to confirm that the resume PDF says the same.
 - Open question 2: the Lost & Found app credits a co-developer (Muhammad Ahmed Asim). Owner to say whether the project text should mention a team.
 - Year of study, SSC/HSSC details, profile photo
 - NEXT_PUBLIC_SITE_URL: set to the real domain after Step 10 (the Vercel fallback works until then).
@@ -181,10 +182,10 @@
 
 ## Current step notes
 Current focus: the feature phase. F3 and F4 are done. Next in line: F2 (print-friendly resume), then F5 onward. Still owed: Lighthouse baseline, Snake screenshot, Chess leftovers (fool's-mate check, wasm transfer size, phone layout).
-To start F2 the assistant needs: cat app/resume/page.tsx and grep -n "print" app/globals.css.
+F2 plan: see F2_RESUME_PRINT_STATE.md (app/resume/page.tsx is in next-context.txt, and app/globals.css has no print rules yet).
 Lighthouse has not been run yet; do it on a production build and send the failing item names.
 How to give the assistant context in a new chat: attach PORTFOLIO_BUILD_BRIEF.md, SESSION_STARTER.md, PROGRESS.md,
-NEXT_STEP_GAMES_AND_LOST_FOUND.md, and the files produced by: bash scripts/make-context.sh (next-context.txt and file-list.txt).
+F2_RESUME_PRINT_STATE.md, 00_START_HERE.md, and the files produced by: bash scripts/make-context.sh (next-context.txt and file-list.txt).
 
 ## Step summaries (5 to 8)
 - Step 5: /skills bento grid (1 col mobile, 2 at md, 6 at lg; large tile spans 4 cols and 2 rows) and /about.
