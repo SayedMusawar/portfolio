@@ -26,7 +26,7 @@ export default function PlaySnakePage() {
 
             <header className="mt-8 max-w-3xl">
                 <h1 className="text-4xl font-semibold leading-[1.1] md:text-5xl">Snake</h1>
-                <p className="mt-4 text-lg text-muted-foreground">Playable in your browser. This is my C++ game compiled to WebAssembly. The graphics and input layer was adapted for the browser (an SDL2 compatibility layer), and the game rules are unchanged.</p>
+                <p className="mt-4 text-lg text-muted-foreground">Playable in your browser. This is my C++ game compiled to WebAssembly. The graphics and input layer was adapted for the browser (an SDL2 compatibility layer), and the game rules are unchanged. On small screens the board has fewer cells so they stay big enough to play.</p>
                 <div className="mt-6 flex flex-wrap gap-3">
                     {project?.githubUrl && (
                         <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className={primaryLink}>
@@ -51,7 +51,7 @@ export default function PlaySnakePage() {
                 <h2 id="how-heading" className="text-2xl font-semibold">
                     How to play
                 </h2>
-                <p className="mt-4">Press an arrow key or W, A, S, D to start moving, and eat the red food to grow. Gold food is worth 5 points but disappears after a few seconds. Hitting a wall or yourself ends the game. P pauses, and Enter restarts after game over. On a phone, use the buttons under the board.</p>
+                <p className="mt-4">Press an arrow key or W, A, S, D to start moving, and eat the red food to grow. Gold food is worth 5 points but disappears after a few seconds. Hitting a wall or yourself ends the game. P pauses, and Enter restarts after game over. On a phone, swipe on the board or use the buttons under it.</p>
                 <p className="mt-4 text-muted-foreground">Your high score is saved in this browser only. The font is DejaVu Sans Bold, which is freely licensed, and its license text is in the GitHub repository.</p>
             </section>
         </article>
