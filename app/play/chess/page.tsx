@@ -44,14 +44,14 @@ export default function PlayChessPage() {
                 <h2 id="game-heading" className="sr-only">
                     Game
                 </h2>
-                <WasmGameFrame title="chess" src="/games/chess/ChessGameProject.html" width={640} height={740} />
+                <WasmGameFrame title="chess" src="/games/chess/ChessGameProject.html" width={640} height={740} fit="scale" />
             </section>
 
             <section aria-labelledby="how-heading" className="mt-12 max-w-[65ch]">
                 <h2 id="how-heading" className="text-2xl font-semibold">
                     How to play
                 </h2>
-                <p className="mt-4">Two players share one board and White moves first. Click a piece to select it, then click a green dot to move there. The status bar shows check, and a dialog announces checkmate.</p>
+                <p className="mt-4">Two players share one board and White moves first. Click or tap a piece to select it, then click or tap a green dot to move there. The status bar shows check, and a dialog announces checkmate.</p>
                 <p className="mt-4 text-muted-foreground">Built with Qt for WebAssembly, which Qt offers under the GPLv3. The source code is on GitHub.</p>
             </section>
         </article>
