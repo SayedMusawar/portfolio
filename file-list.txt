@@ -14,6 +14,7 @@
 ./app/page.tsx
 ./app/play/chess/page.tsx
 ./app/play/page.tsx
+./app/play/snake/page.tsx
 ./app/projects/page.tsx
 ./app/projects/[slug]/page.tsx
 ./app/resume/page.tsx
@@ -58,7 +59,7 @@
 ./data/skills.ts
 ./data/timeline.ts
 ./eslint.config.mjs
-./F3_SNAKE_STATE.md
+./F2_RESUME_PRINT_STATE.md
 ./file-list.txt
 ./.gitignore
 ./lib/contact-schema.ts
@@ -71,9 +72,9 @@
 ./next.config.ts
 ./next-context.txt
 ./next-env.d.ts
-./NEXT_STEP_GAMES_AND_LOST_FOUND.md
 ./package.json
 ./package-lock.json
+./PORTFOLIO_BUILD_BRIEF.md
 ./postcss.config.mjs
 ./PROGRESS.md
 ./public/file.svg
@@ -82,6 +83,10 @@
 ./public/games/chess/ChessGameProject.wasm
 ./public/games/chess/qtloader.js
 ./public/games/chess/qtlogo.svg
+./public/games/snake/snake.data
+./public/games/snake/snake.html
+./public/games/snake/snake.js
+./public/games/snake/snake.wasm
 ./public/globe.svg
 ./public/images/projects/chess-game/01.webp
 ./public/images/projects/chess-game/02.webp
