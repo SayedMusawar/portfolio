@@ -17,7 +17,7 @@
 ## Feature phase (extras the owner chose, built one at a time, before or around Step 10)
 - [x] F1a: GitHub links in data/projects.ts (6 of 9 projects have a repo; todo-app, spotify-clone, small-projects have none)
 - [~] F1b: screenshots. Done for lost-and-found-system (3), it-problem-reporting (5), chess-game (4). Still missing: snake, weather, todo, youtube clone, spotify clone, small projects
-- [ ] F2: print-friendly /resume (Ctrl+P gives a clean PDF). Resume PDF itself was uploaded by the owner to public/resume/
+- [x] F2: print-friendly /resume (Ctrl+P gives a clean PDF). Resume PDF itself was uploaded by the owner to public/resume/
 - [x] F3: playable Chess (Qt for WebAssembly) and Snake (SDL2 compatibility header, emscripten_set_main_loop, high score kept in the browser via IDBFS) on /play. Existing C++ compiled to WebAssembly, no rewrite. Both tested and pushed (2026-10-05)
 - [x] F4: live link to the Lost & Found app (https://lost-found-intelligence.vercel.app/), checked in a private window: working app with dummy demo accounts only
 - [ ] F5: command palette (Ctrl/Cmd+K)
@@ -173,7 +173,7 @@
 - highlights for the small projects (data/projects.ts has TODO comments)
 - Open question 1: year. data/projects.ts now says 2026 for lost-and-found-system and it-problem-reporting (matches the app screenshots), but the brief says 2025. Owner to confirm that the resume PDF says the same.
 - Open question 2: the Lost & Found app credits a co-developer (Muhammad Ahmed Asim). Owner to say whether the project text should mention a team.
-- Year of study, SSC/HSSC details, profile photo
+- Year of study, SSC/HSSC school names (years 2021 and 2023 are on the resume page), profile photo
 - NEXT_PUBLIC_SITE_URL: set to the real domain after Step 10 (the Vercel fallback works until then).
 - RESEND_API_KEY must also be added in Vercel (Settings, Environment Variables) at Step 10.
 - GitHub profile bio is out of date (says FAST-NUCES Peshawar, different email, portfolio "coming soon"). Owner may update before deploying.
@@ -181,8 +181,8 @@
 - Pathfinder: drag-to-draw walls only works with a mouse; touch devices can tap one cell at a time. (Planned in F8.)
 
 ## Current step notes
-Current focus: the feature phase. F3 and F4 are done. Next in line: F2 (print-friendly resume), then F5 onward. Still owed: Lighthouse baseline, Snake screenshot, Chess leftovers (fool's-mate check, wasm transfer size, phone layout).
-F2 plan: see F2_RESUME_PRINT_STATE.md (app/resume/page.tsx is in next-context.txt, and app/globals.css has no print rules yet).
+Current focus: the feature phase. F3 and F4 are done. F2 is done. Per the owner: finish and deploy (Step 10) first; F5 onward and the redesign (Get in touch section, more dynamic layout) come after deployment. Still owed: Lighthouse baseline, Snake screenshot, Chess leftovers (fool's-mate check, wasm transfer size, phone layout).
+F2 done: print rules are in app/print.css (imported in app/layout.tsx), components/print-button.tsx, app/resume/page.tsx has print-only link addresses and SSC 2021 / HSSC 2023 (years only).
 Lighthouse has not been run yet; do it on a production build and send the failing item names.
 How to give the assistant context in a new chat: attach PORTFOLIO_BUILD_BRIEF.md, SESSION_STARTER.md, PROGRESS.md,
 F2_RESUME_PRINT_STATE.md, 00_START_HERE.md, and the files produced by: bash scripts/make-context.sh (next-context.txt and file-list.txt).
