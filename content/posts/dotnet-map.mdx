@@ -1,0 +1,121 @@
+---
+title: "I Just Started Learning .NET. Here's the Map I Wish I'd Had on Day One"
+date: "2026-10-13"
+summary: "A beginner's whiteboard map of the .NET ecosystem: desktop apps, web apps, APIs and data access, and how they fit together."
+tags: ["dotnet", "csharp", "web-api", "entity-framework", "beginner"]
+draft: false
+---
+
+When I started exploring .NET, I felt lost almost immediately. WinForms, WPF, Web Forms, MVC, WCF, ADO.NET, Entity Framework... so many names, and half of them sound the same.
+
+So I grabbed a whiteboard and sketched out what I found. This post is the cleaned-up version of that sketch. I'm a beginner, so this isn't an expert guide. It's what made things click for me while exploring.
+
+## The Big Idea: Three Questions
+
+Almost every .NET project comes down to three questions:
+
+1. **What does the user interact with?** (a desktop app or a website)
+2. **How does the frontend talk to the backend?** (web services and APIs)
+3. **How does the backend talk to the database?** (data access)
+
+Once I separated these, the confusion faded. Each technology answers one of these questions.
+
+## 1. Desktop Applications
+
+These run directly on the user's computer.
+
+- **WinForms** is the older, drag-and-drop way to build Windows apps. It's simple and quick, but the look can feel dated.
+- **WPF (Windows Presentation Foundation)** is the newer approach. It uses XAML for layout, so you get richer visuals, styling and data binding.
+
+Both are Windows-focused. They're great for internal tools and business software, but I decided the web side was where I wanted to spend most of my time.
+
+## 2. Web Applications
+
+This is where .NET's history shows the most. Here's how it evolved:
+
+- **ASP.NET (classic)** was the original web framework, built on the older .NET Framework.
+- **ASP.NET Web Forms** brought a drag-and-drop, event-driven style to the web, trying to make it feel like desktop programming.
+- **ASP.NET MVC** split code into **Model, View and Controller**, which is cleaner and easier to test.
+- **ASP.NET Core MVC** is the modern, cross-platform, open-source version. This is the one I'm focusing on.
+
+My takeaway: know what the older ones are, because you'll see them in existing projects, but start new work with ASP.NET Core.
+
+## 3. Web Services and APIs
+
+This was the part that clicked the most for me.
+
+Imagine a mobile app that needs data. It shouldn't connect straight to the database. Instead:
+
+> **Mobile App → Endpoint → API → Database**
+
+The app calls an **endpoint** (a URL). The **API** (the backend) applies the logic, talks to the database, and sends the result back, usually as JSON. The big benefit is that one backend can serve a mobile app, a website and a desktop app at the same time.
+
+There are two main technologies here:
+
+- **WCF (Windows Communication Foundation)** is the older service technology, mostly using SOAP and XML.
+- **ASP.NET Core Web API** is the modern standard, using plain HTTP and JSON.
+
+Here's how small a basic Web API controller can be:
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ProductsController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var products = new[] { "Laptop", "Phone", "Headphones" };
+        return Ok(products);
+    }
+}
+```
+
+Run that, visit `/api/products`, and you get a JSON list back. That's an endpoint.
+
+## 4. Database-Connected Applications
+
+Most real apps need to save and load data. The flow is a request going out (save or query) and data coming back. There are three tools to know:
+
+- **ADO.NET** is the low-level option. You write the SQL yourself and manage connections and commands. You get full control, but it takes more code.
+- **Entity Framework** is an ORM (Object-Relational Mapper). You work with C# objects instead of writing SQL.
+- **Entity Framework Core** is the modern, cross-platform version, with LINQ queries and migrations. This is the one I'm learning.
+
+Here's the difference in feel. With EF Core, you define a class:
+
+```csharp
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+```
+
+Then query it like this:
+
+```csharp
+var cheapProducts = await context.Products
+    .Where(p => p.Price < 50)
+    .ToListAsync();
+```
+
+No hand-written SQL. EF Core translates that into a query for you.
+
+## How It All Fits Together
+
+These technologies aren't competing options. They're **layers**:
+
+> **Frontend (web or mobile) → ASP.NET Core Web API → EF Core → Database**
+
+Each layer has one job, and you can change one without breaking the others. That's the biggest lesson I took from this exercise.
+
+## What I'm Taking Away
+
+- **Learn the old tech enough to recognize it, but build with the modern tools.**
+- **Think in layers:** UI, API, data access.
+- **Don't try to learn everything at once.** Pick one path (for me: ASP.NET Core, Web API and EF Core) and go deep.
+
+I'm still at the beginning of this journey, and I'll keep sharing what I learn as I build. If you're also starting with .NET, I hope this map saves you some of the confusion I had.
+
+Thanks for reading!
