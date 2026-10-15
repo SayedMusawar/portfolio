@@ -1,0 +1,460 @@
+---
+title: "My First Day Learning C#: From Hello World to Switch Statements"
+description: "A beginner's walkthrough of my first day with C#: printing output, variables, user input, operators, if/else, and switch, with runnable code and the mistakes to avoid."
+date: "2026-10-16"
+author: "Musawar"
+tags: ["csharp", "dotnet", "beginners", "programming-basics", "learning-in-public"]
+category: "Learning Journey"
+readingTime: "10 min read"
+draft: false
+---
+
+# My First Day Learning C#: From Hello World to Switch Statements
+
+Today I started learning **C#**, and I'm writing everything down while it's fresh. This post is part of my learning-in-public journey, and I hope it helps anyone else starting out.
+
+By the end of this post, you'll have seen how to:
+
+1. Print output to the console
+2. Store data in variables of different types
+3. Read input from the user
+4. Compare values with operators
+5. Make decisions with `if` / `else`
+6. Handle many choices with `switch`
+
+> **Tip:** Every example here is a complete program. You can paste any of them into a new console project and run it.
+
+---
+
+## Setting Up: How to Run These Examples
+
+You'll need the [.NET SDK](https://dotnet.microsoft.com/download) installed. Then, in a terminal:
+
+```bash
+dotnet new console -n MyFirstApp
+cd MyFirstApp
+dotnet run
+```
+
+`dotnet new console` creates a starter project, and `dotnet run` builds and runs it. Replace the contents of `Program.cs` with any example below to try it out.
+
+> **Note:** Newer templates use "top-level statements", so `Program.cs` may look shorter than my examples. The code in this post uses the classic structure with a `Main` method, which makes it clearer what's happening. Both styles work.
+
+---
+
+## 1. Hello, World
+
+Every programming journey starts here.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, world");
+    }
+}
+```
+
+### Breaking it down
+
+| Line | What it does |
+|------|--------------|
+| `using System;` | Imports the `System` namespace, which contains `Console` and many other built-in tools. |
+| `class Program` | C# code lives inside classes. This one holds our program. |
+| `static void Main()` | The **entry point**. The program starts running here. |
+| `Console.WriteLine(...)` | Prints text to the screen, then moves to a new line. |
+
+**Output:**
+
+```text
+Hello, world
+```
+
+Two other things I picked up:
+
+- Every statement ends with a semicolon `;`.
+- `Console.Write()` prints without moving to a new line, while `Console.WriteLine()` adds the line break.
+
+---
+
+## 2. Variables and Data Types
+
+A **variable** is a named container that holds a value. C# is *statically typed*, which means you must declare what kind of data a variable will hold.
+
+```csharp
+using System;
+
+class Variables
+{
+    static void Main()
+    {
+        int Age = 20;
+        Console.WriteLine("Age: " + Age);
+
+        Age = 25; // variables can be updated
+        Console.WriteLine(Age);
+
+        float Height = 6.9f;
+        Console.WriteLine("Float " + Height);
+
+        char Cha = 'C';
+        Console.WriteLine("Char " + Cha);
+
+        string Name = "Musawar";
+        Console.WriteLine("My name is: " + Name + " as a string");
+
+        bool A = true;
+    }
+}
+```
+
+**Output:**
+
+```text
+Age: 20
+25
+Float 6.9
+Char C
+My name is: Musawar as a string
+```
+
+### The five types I learned today
+
+| Type | Stores | Example | Notes |
+|------|--------|---------|-------|
+| `int` | Whole numbers | `20` | No decimal point |
+| `float` | Decimal numbers | `6.9f` | Needs the `f` suffix |
+| `char` | One single character | `'C'` | Single quotes only |
+| `string` | Text | `"Musawar"` | Double quotes only |
+| `bool` | `true` or `false` | `true` | Lowercase in C# |
+
+### Things worth remembering
+
+- **Changing a value:** `Age = 25;` doesn't repeat the type. You only write `int` when you first *declare* the variable.
+- **String concatenation:** The `+` operator joins a string with another value. `"Age: " + Age` becomes `"Age: 20"`.
+- **Quotes matter:** `'C'` is a `char`, while `"C"` is a `string` with one letter. They are different types.
+- **Why the `f`?** In C#, a number like `6.9` is a `double` by default. The `f` tells the compiler you want a `float`. Without it, you'll get an error.
+- **Naming style:** The C# convention for local variables is `camelCase` (`age`, `height`). I used capitals in my practice code, but I'm switching to the convention going forward.
+
+---
+
+## 3. Taking User Input
+
+Programs get a lot more interesting when they react to the user. `Console.ReadLine()` waits for the user to type something and press Enter.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Enter your name");
+        string name = Console.ReadLine();
+        Console.WriteLine("Hello " + name);
+
+        Console.WriteLine("Enter your age");
+        int age = int.Parse(Console.ReadLine());
+        Console.WriteLine("AGE: " + age);
+
+        Console.WriteLine("Enter your height");
+        float Height = float.Parse(Console.ReadLine());
+        Console.WriteLine(Height);
+    }
+}
+```
+
+**Example run:**
+
+```text
+Enter your name
+Musawar
+Hello Musawar
+Enter your age
+20
+AGE: 20
+Enter your height
+5.9
+5.9
+```
+
+### The big lesson: input is always a string
+
+`Console.ReadLine()` **always returns text**, even if the user types `20`. To use it as a number, you must convert it:
+
+- `int.Parse(...)` converts text to a whole number
+- `float.Parse(...)` converts text to a decimal number
+
+### The catch
+
+If the user types something that isn't a valid number, like `abc`, `Parse` throws an exception and the program crashes:
+
+```text
+Unhandled exception. System.FormatException: The input string 'abc' was not in a correct format.
+```
+
+There's a safer approach called `TryParse`, which I'll cover soon. Here's a quick preview:
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Enter your age");
+
+        if (int.TryParse(Console.ReadLine(), out int age))
+        {
+            Console.WriteLine("AGE: " + age);
+        }
+        else
+        {
+            Console.WriteLine("That's not a valid number.");
+        }
+    }
+}
+```
+
+---
+
+## 4. Comparison and Logical Operators
+
+Operators let us ask questions about our data. Every comparison produces a `bool`, which is either `true` or `false`.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int a = 10;
+        int b = 3;
+
+        Console.WriteLine(a == b); // False
+        Console.WriteLine(a != b); // True
+        Console.WriteLine(a < b);  // False
+        Console.WriteLine(a >= b); // True
+
+        int age = 18;
+        bool hasID = true;
+
+        Console.WriteLine(age >= 18 && hasID); // True
+        Console.WriteLine(age >= 18 || hasID); // True
+    }
+}
+```
+
+**Output:**
+
+```text
+False
+True
+False
+True
+True
+True
+```
+
+### Comparison operators
+
+| Operator | Meaning | Example (`a = 10`, `b = 3`) | Result |
+|----------|---------|------------------------------|--------|
+| `==` | Equal to | `a == b` | `False` |
+| `!=` | Not equal to | `a != b` | `True` |
+| `<` | Less than | `a < b` | `False` |
+| `>` | Greater than | `a > b` | `True` |
+| `<=` | Less than or equal to | `a <= b` | `False` |
+| `>=` | Greater than or equal to | `a >= b` | `True` |
+
+### Logical operators
+
+| Operator | Name | True when... |
+|----------|------|--------------|
+| `&&` | AND | **Both** sides are true |
+| `\|\|` | OR | **At least one** side is true |
+| `!` | NOT | The value is false (it flips the result) |
+
+In the ID example, `age >= 18 && hasID` is true because the person is old enough **and** has an ID. With `||`, only one of the two needs to be true.
+
+> **Common beginner mistake:** `=` and `==` are very different.
+> `=` **assigns** a value (`int x = 5;`), while `==` **compares** two values (`x == 5`).
+
+---
+
+## 5. Making Decisions with if / else
+
+Now we can combine input and comparisons so the program makes its own choices.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Enter your age");
+        int age = int.Parse(Console.ReadLine());
+
+        if (age >= 18)
+            Console.WriteLine("You are eligible to vote");
+        else
+            Console.WriteLine("You are not eligible to vote.. play with toys");
+    }
+}
+```
+
+**Example runs:**
+
+```text
+Enter your age
+21
+You are eligible to vote
+```
+
+```text
+Enter your age
+12
+You are not eligible to vote.. play with toys
+```
+
+### How it works
+
+1. C# evaluates the condition inside the parentheses: `age >= 18`.
+2. If it's `true`, the first statement runs.
+3. If it's `false`, the `else` statement runs instead.
+
+### Curly braces
+
+My code skips braces because each branch has only one statement. As soon as a branch has more than one, braces are required. Many developers use braces *always*, because it avoids bugs when code is edited later:
+
+```csharp
+if (age >= 18)
+{
+    Console.WriteLine("You are eligible to vote");
+    Console.WriteLine("Don't forget your ID!");
+}
+else
+{
+    Console.WriteLine("You are not eligible to vote yet");
+}
+```
+
+---
+
+## 6. The switch Statement
+
+When you're checking **one value against many fixed options**, `switch` is cleaner than a long chain of `if / else if`.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Enter day");
+        int day = int.Parse(Console.ReadLine());
+
+        switch (day)
+        {
+            case 1:
+                Console.WriteLine("Monday");
+                break;
+            case 2:
+                Console.WriteLine("Tuesday");
+                break;
+            case 3:
+                Console.WriteLine("Wednesday");
+                break;
+            case 4:
+                Console.WriteLine("Thursday");
+                break;
+            case 5:
+                Console.WriteLine("Friday");
+                break;
+            case 6:
+                Console.WriteLine("Saturday");
+                break;
+            case 7:
+                Console.WriteLine("Sunday");
+                break;
+            default:
+                Console.WriteLine("Invalid day");
+                break;
+        }
+    }
+}
+```
+
+**Example runs:**
+
+```text
+Enter day
+3
+Wednesday
+```
+
+```text
+Enter day
+9
+Invalid day
+```
+
+### The parts of a switch
+
+- `switch (day)` is the value being checked.
+- `case 1:` is a possible match. If `day` equals `1`, this block runs.
+- `break;` ends the case. In C#, each case **must** end with `break` (or another jump statement), or the compiler will complain.
+- `default:` is the fallback that runs when no case matches. It's perfect for handling invalid input.
+
+### switch vs if/else
+
+| Use `switch` when... | Use `if / else` when... |
+|----------------------|-------------------------|
+| Checking one variable against exact values | Checking ranges (`age >= 18`) |
+| You have many options (days, menu choices) | You combine conditions (`&&`, `\|\|`) |
+| You want cleaner, more readable code | You only have two or three branches |
+
+---
+
+## Common Mistakes I Want to Avoid
+
+1. **Forgetting the `f` on floats.** `float h = 6.9;` is an error, and `float h = 6.9f;` works.
+2. **Using `=` instead of `==`** in a condition.
+3. **Forgetting to convert input.** `ReadLine()` returns a string, so you need `Parse` for numbers.
+4. **Trusting user input blindly.** `Parse` crashes on invalid text, so `TryParse` is the safer tool.
+5. **Forgetting `break` in a switch case.**
+6. **Mixing up `'single'` and `"double"` quotes.** Single quotes are for `char`, double quotes for `string`.
+
+---
+
+## Practice Challenges
+
+If you want to cement these concepts, try building these small programs:
+
+1. **Greeting card:** Ask for the user's name and favorite number, then print a personalized message.
+2. **Grade checker:** Read a score (0 to 100) and print `A`, `B`, `C`, or `Fail` using `if / else if`.
+3. **Simple calculator:** Ask for two numbers and an operator (`+`, `-`, `*`, `/`), then use `switch` to compute the result.
+4. **Even or odd:** Read a number and print whether it's even (hint: the `%` operator gives the remainder).
+5. **Ride eligibility:** A ride requires age 12 or older **and** height of at least 4.5 feet. Combine both checks with `&&`.
+
+---
+
+## Key Takeaways
+
+- Every C# program begins at `Main()`.
+- Variables need a **type**, and the type decides what the variable can hold.
+- `Console.ReadLine()` returns a **string**, so numbers must be converted.
+- Comparison and logical operators produce `true` or `false`.
+- `if / else` handles conditions and ranges, while `switch` handles many exact options.
+
+## What's Next
+
+Tomorrow I'm moving on to **loops** (`for`, `while`, and `foreach`) so I can repeat actions without copying code. I'll also practice handling invalid input with `TryParse` so my programs stop crashing when someone types `abc` instead of a number.
+
+Thanks for reading! If you're learning C# too, I'd love to hear what you're building. Follow along as I document the rest of the journey.
