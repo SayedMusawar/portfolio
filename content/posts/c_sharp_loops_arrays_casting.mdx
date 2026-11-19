@@ -1,0 +1,600 @@
+---
+title: "Day 2 of Learning C#: Loops, Arrays, and Type Casting"
+description: "A beginner's walkthrough of my second day with C#: while, do-while, for, and foreach loops, 1D, 2D, and jagged arrays, list patterns, and type casting, with runnable code and the bugs I hit."
+date: "2026-11-19"
+author: "Musawar"
+tags: ["csharp", "dotnet", "beginners", "loops", "arrays", "type-casting", "learning-in-public"]
+category: "Learning Journey"
+readingTime: "12 min read"
+draft: false
+---
+
+# Day 2 of Learning C#: Loops, Arrays, and Type Casting
+
+In [my first post](/blog/c-sharp-fundamentals) I covered variables, input, operators, `if`/`else`, and `switch`. At the end I promised that loops were next, and here we are. This post also covers **arrays** and **type casting**, because loops and arrays go together like bread and butter.
+
+By the end of this post, you'll have seen how to:
+
+1. Repeat code with `while`, `do-while`, `for`, and `foreach`
+2. Store collections of data in 1D, 2D, and jagged arrays
+3. Match array shapes with list patterns in a `switch` expression
+4. Convert between types with casting, `Math.Round`, and `Convert`
+
+> **Tip:** Every example is a complete program. Some use **top-level statements** (no `Main` method), which the newer .NET templates support. They can be pasted straight into `Program.cs` as they are.
+
+---
+
+## 1. The `while` Loop
+
+A `while` loop keeps running **as long as its condition is true**. The condition is checked *before* each pass.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int x = 0;
+        while (x < 10)
+        {
+            Console.WriteLine(x);
+            x++;
+        }
+    }
+}
+```
+
+**Output:**
+
+```text
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+```
+
+### How it works
+
+1. Check `x < 10`. If it's `false`, skip the loop entirely.
+2. If it's `true`, run the body.
+3. Go back to step 1.
+
+`x++` is shorthand for `x = x + 1`. Without it, `x` would stay `0` forever and the loop would never end. That's an **infinite loop**, and it's the classic `while` mistake.
+
+---
+
+## 2. The `do-while` Loop
+
+A `do-while` loop is a `while` loop with one difference: the condition is checked **after** the body. So the body **always runs at least once**.
+
+That makes it perfect for "ask until they get it right" situations, like a password prompt:
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        string? actualPass = "password";
+        string? password;
+
+        do
+        {
+            Console.Write("Enter your password: ");
+            password = Console.ReadLine();
+        } while (password != actualPass);
+
+        Console.WriteLine("Correct!");
+    }
+}
+```
+
+**Example run:**
+
+```text
+Enter your password: 1234
+Enter your password: hello
+Enter your password: password
+Correct!
+```
+
+### Things worth remembering
+
+- **Semicolon at the end:** `while (...)` in a `do-while` ends with a `;`. A regular `while` loop doesn't.
+- **Why `string?`** The `?` means the variable is allowed to be `null`. `Console.ReadLine()` can return `null` (for example, if the input stream closes), so the compiler wants us to acknowledge that.
+- **Why not a regular `while`?** We'd have to ask for the password once *before* the loop and again *inside* it. `do-while` lets us write that line only once.
+
+---
+
+## 3. The `for` Loop
+
+When you know **how many times** you want to repeat something, `for` is the tidiest option because it packs the setup, condition, and update into one line.
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        for (int i = 1; i <= 10; i++) Console.WriteLine(i);
+    }
+}
+```
+
+**Output:**
+
+```text
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+```
+
+### The three parts
+
+```text
+for ( int i = 1 ; i <= 10 ; i++ )
+      ─────────   ───────   ───
+      1. start    2. check  3. update
+```
+
+1. **Initializer** runs once at the start: `int i = 1`.
+2. **Condition** is checked before every pass: `i <= 10`.
+3. **Iterator** runs after every pass: `i++`.
+
+Like `if`, a `for` with one statement doesn't need braces, but add them as soon as you have more than one statement.
+
+---
+
+## 4. The `foreach` Loop
+
+`foreach` walks through **every item in a collection**, one at a time, with no counters or indexes to manage.
+
+```csharp
+List<string> names = ["Adams", "Barry", "Charlie"];
+
+foreach (string name in names)
+{
+    Console.WriteLine($"{name} has {name.Length} characters.");
+}
+```
+
+**Output:**
+
+```text
+Adams has 5 characters.
+Barry has 5 characters.
+Charlie has 7 characters.
+```
+
+### Things worth remembering
+
+- **`$"..."` is string interpolation.** Anything inside `{ }` is evaluated and inserted into the string. It's much cleaner than gluing strings together with `+`.
+- **`name.Length`** gives the number of characters in a string.
+- **You can't change the loop variable.** Inside a `foreach`, `name` is read-only. If you need to modify items, use a `for` loop.
+- **`[ "Adams", ... ]`** is a *collection expression*, a newer C# shortcut for creating a list. Older code writes `new List<string> { "Adams", "Barry", "Charlie" }`.
+
+### Which loop should I use?
+
+| Use... | When... |
+|--------|---------|
+| `for` | You know the number of repetitions, or you need the index |
+| `foreach` | You want every item in a collection and don't need the index |
+| `while` | You repeat until a condition changes, and it might run zero times |
+| `do-while` | You repeat until a condition changes, and it must run at least once |
+
+---
+
+## 5. Arrays (1D)
+
+An **array** stores a fixed number of values of the same type under one name. Each value has an **index**, and indexes start at **0**, not 1.
+
+```csharp
+// Create and fill in one step
+string[] name = { "Kate", "Jake", "Rebecca", "Tom" };
+
+// Create an empty array of size 4, then fill it
+string[] names = new string[4];
+
+names[0] = "Kate";
+names[1] = "Jack";
+names[2] = "Rebecca";
+names[3] = "Tom";
+
+for (int i = 0; i < names.Length; i++)
+    Console.WriteLine($"{names[i]} is at position {i + 1}");
+```
+
+**Output:**
+
+```text
+Kate is at position 1
+Jack is at position 2
+Rebecca is at position 3
+Tom is at position 4
+```
+
+### Things worth remembering
+
+- **`names.Length`** is the number of items (4), but the last valid index is `Length - 1` (3). That's why the loop uses `i < names.Length`, not `<=`.
+- **Going out of range crashes.** `names[4]` throws an `IndexOutOfRangeException`.
+- **A note on memory.** My notes originally said the first style is "normal allocation" and `new` is "dynamic allocation on the heap". It turns out that's not accurate. In C#, **arrays are reference types, so both styles create the array on the heap**. The first form is just a shorthand for the second.
+- **Explicit sizes work too:** `int[] numbers = new int[3] { 1, 2, 3 };` and `float[] no = new float[4] { 1.1f, 2.2f, 3.3f, 4.4f };`.
+
+---
+
+## 6. 2D Arrays
+
+A 2D array is like a table with **rows and columns**. You read it with two indexes: `grid[row, column]`.
+
+```csharp
+string[,] grid1 =
+{
+    { "Alpha",    "Beta", "Gamma",   "Delta" },
+    { "Anne",     "Ben",  "Charlie", "Doug"  },
+    { "Aardvark", "Bear", "Cat",     "Dog"   }
+};
+
+Console.WriteLine($"1st dimension, lower bound: {grid1.GetLowerBound(0)}");
+Console.WriteLine($"1st dimension, upper bound: {grid1.GetUpperBound(0)}");
+Console.WriteLine($"2nd dimension, lower bound: {grid1.GetLowerBound(1)}");
+Console.WriteLine($"2nd dimension, upper bound: {grid1.GetUpperBound(1)}");
+
+for (int i = 0; i <= grid1.GetUpperBound(0); i++)
+{
+    for (int j = 0; j <= grid1.GetUpperBound(1); j++)
+    {
+        Console.WriteLine($"Row {i}, Column {j}: {grid1[i, j]}");
+    }
+}
+```
+
+**Output (first lines):**
+
+```text
+1st dimension, lower bound: 0
+1st dimension, upper bound: 2
+2nd dimension, lower bound: 0
+2nd dimension, upper bound: 3
+Row 0, Column 0: Alpha
+Row 0, Column 1: Beta
+Row 0, Column 2: Gamma
+Row 0, Column 3: Delta
+Row 1, Column 0: Anne
+...
+```
+
+### Things worth remembering
+
+- **Dimension 0 is rows, dimension 1 is columns.** This grid has 3 rows and 4 columns, so the upper bounds are `2` and `3`.
+- **Nested loops:** the outer loop picks the row, and the inner loop walks across every column in that row.
+- **`GetUpperBound(n)` vs `GetLength(n)`:** the upper bound is the last valid index, and the length is the count. For a normal array, `upper bound = length - 1`.
+
+---
+
+## 7. Jagged Arrays
+
+A **jagged array** is an *array of arrays*, and each inner array can have a **different length**. A 2D array is a perfect rectangle, but a jagged array is not.
+
+```csharp
+string[][] jagged =
+{
+    new[] { "Alpha", "Beta", "Gamma" },
+    new[] { "Alice", "Bob", "Charlie", "Delta" },
+    new[] { "Aardvark", "Bear" },
+};
+
+Console.WriteLine("Upper bound of the array of arrays is: {0}", jagged.GetUpperBound(0));
+
+for (int i = 0; i <= jagged.GetUpperBound(0); i++)
+{
+    Console.WriteLine("Upper bound of array {0} is: {1}",
+        arg0: i,
+        arg1: jagged[i].GetUpperBound(0));
+}
+```
+
+**Output:**
+
+```text
+Upper bound of the array of arrays is: 2
+Upper bound of array 0 is: 2
+Upper bound of array 1 is: 3
+Upper bound of array 2 is: 1
+```
+
+Notice that each inner array reports a different upper bound. You read an item with **two sets of brackets**: `jagged[row][column]`, not `jagged[row, column]`.
+
+### The bug I hit
+
+My first attempt at printing every item looked like this:
+
+```csharp
+// ❌ Buggy version
+for (int i = 0; i <= jagged.GetUpperBound(0); i++)
+    for (int j = 0; i <= jagged[i].GetUpperBound(0); j++)   // <-- typo!
+    {
+        Console.WriteLine($"Row {i}, Col {j}: {jagged[i][j]}");
+    }
+```
+
+Spot it? The inner loop's condition says `i <= ...` instead of `j <= ...`. Since `i` never changes inside the inner loop, the condition stays `true` forever, `j` keeps growing, and the program crashes with an `IndexOutOfRangeException` once `j` passes the end of the row.
+
+The fix is a single letter:
+
+```csharp
+// ✅ Fixed version
+for (int i = 0; i <= jagged.GetUpperBound(0); i++)
+    for (int j = 0; j <= jagged[i].GetUpperBound(0); j++)
+    {
+        Console.WriteLine($"Row {i}, Col {j}: {jagged[i][j]}");
+    }
+```
+
+> **Lesson:** When a loop misbehaves, check that the variable in the **condition** is the same one you're **updating**. Using `i` and `j` side by side makes this typo very easy to make.
+
+---
+
+## 8. Matching Array Shapes with List Patterns
+
+This one surprised me. C# can check the **shape** of an array inside a `switch` expression using *list patterns*.
+
+```csharp
+static string CheckSwitch(int[] values) => values switch
+{
+    [] => "Empty array",
+    [1, 2, _, 10] => "Contains 1, 2, any single number, 10",
+    [1, 2, .., 10] => "Contains 1, 2, any range including empty, 10.",
+    [1, 2] => "Contains 1 then 2.",
+    [int item1, int item2, int item3] => $"Contains {item1} then {item2}, then {item3}",
+    [0, _] => "Starts with 0, then any other number",
+    [0, ..] => "Starts with 0, then any range of numbers.",
+    [2, .. int[] others] => $"Starts with 2, then {others.Length} more numbers.",
+    [..] => "Any items in any order"
+};
+
+int[] x = { 1 };
+Console.WriteLine(CheckSwitch(x));
+```
+
+**Output:**
+
+```text
+Any items in any order
+```
+
+### The pattern symbols
+
+| Pattern | Meaning |
+|---------|---------|
+| `[]` | An empty array |
+| `_` | Exactly **one** item, any value |
+| `..` | **Any number** of items, including zero |
+| `int item1` | Exactly one item, **captured** into a variable |
+| `.. int[] others` | Any number of items, captured into an array |
+
+### How I tested it
+
+I created a set of arrays to try against it:
+
+```csharp
+int[] natural = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+int[] oneTwo = { 1, 2 };
+int[] oneTwoTen = { 1, 2, 10 };
+int[] oneTwoThreeTen = { 1, 2, 3, 10 };
+int[] primeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+int[] empty = { };
+int[] threeNumbers = { 9, 7, 5 };
+```
+
+| Array | Result |
+|-------|--------|
+| `{ }` | `Empty array` |
+| `{ 1, 2, 3, 10 }` | `Contains 1, 2, any single number, 10` |
+| `{ 1, 2, 10 }` | `Contains 1, 2, any range including empty, 10.` |
+| `{ 1, 2 }` | `Contains 1 then 2.` |
+| `{ 9, 7, 5 }` | `Contains 9 then 7, then 5` |
+| `{ 2, 3, 5, 7, ... }` | `Starts with 2, then 9 more numbers.` |
+| `{ 1 }` | `Any items in any order` |
+
+### Things worth remembering
+
+- **Order matters.** C# checks patterns from top to bottom and uses the **first match**. `{ 1, 2, 3, 10 }` fits both the 2nd and 3rd patterns, but it lands on the 2nd.
+- **The last pattern is a safety net.** `[..]` matches *any* array, so every input gets an answer. Without it, an unmatched array would throw an exception.
+- **A `static` method can live after top-level statements.** It's called a *local function*.
+
+---
+
+## 9. Type Casting
+
+**Casting** means converting a value from one type to another. There are two kinds.
+
+### Widening: `int` to `double`
+
+Going from a smaller type to a bigger one is safe, since no data is lost.
+
+```csharp
+int a = 10;
+double b = (double)a;
+
+Console.WriteLine($"a is {a}, b is {b}");
+```
+
+```text
+a is 10, b is 10
+```
+
+### Narrowing: `double` to `int`
+
+Going the other way **loses the decimal part**, so C# makes you ask for it explicitly with `(int)`.
+
+```csharp
+double c = 9.8;
+int d = (int)c;
+
+Console.WriteLine($"c is {c}, d is {d}");
+```
+
+```text
+c is 9.8, d is 9
+```
+
+> **Important:** `(int)` **truncates** (chops off the decimals). It does **not** round. So `9.8` becomes `9`, not `10`.
+
+### Checking a type
+
+```csharp
+Console.WriteLine(b.GetType());
+Console.WriteLine(typeof(double));
+```
+
+```text
+System.Double
+System.Double
+```
+
+`GetType()` asks a *variable* for its type. `typeof()` asks for the type by *name*. Both give `System.Double`, which is the full .NET name for `double`.
+
+### Rounding properly with `Math.Round`
+
+```csharp
+int e = (int)Math.Round(c);
+Console.WriteLine($"c is {c}, d is {d}, e is {e}");
+```
+
+```text
+c is 9.8, d is 9, e is 10
+```
+
+`Math.Round(9.8)` gives `10.0`, and then `(int)` turns it into `10`.
+
+---
+
+## 10. The Rounding Surprise: `Convert.ToInt32`
+
+`Convert.ToInt32` is another way to turn a `double` into an `int`, but it **rounds** instead of truncating. I wrote a program to see exactly how it behaves with values around `.5`:
+
+```csharp
+double[,] doubles =
+{
+    {   9.49,   9.5,   9.51 },
+    {  10.49,  10.5,  10.51 },
+    {  11.49,  11.5,  11.51 },
+    {  12.49,  12.5,  12.51 },
+    { -12.49, -12.5, -12.51 },
+    { -11.49, -11.5, -11.51 },
+    { -10.49, -10.5, -10.51 },
+    {  -9.49,  -9.5,  -9.51 }
+};
+
+Console.WriteLine("| double | ToInt32 | double | ToInt32 | double | ToInt32");
+
+for (int i = 0; i < doubles.GetLength(0); i++)
+{
+    for (int j = 0; j < doubles.GetLength(1); j++)
+    {
+        Console.Write($"| {doubles[i, j],6} | {Convert.ToInt32(doubles[i, j])}");
+    }
+    Console.WriteLine("|");
+}
+```
+
+Here is what each value becomes:
+
+| double | `(int)` cast | `Convert.ToInt32` |
+|-------:|-------------:|------------------:|
+| 9.49 | 9 | 9 |
+| 9.5 | 9 | **10** |
+| 9.51 | 9 | 10 |
+| 10.49 | 10 | 10 |
+| 10.5 | 10 | **10** |
+| 10.51 | 10 | 11 |
+| 11.5 | 11 | **12** |
+| 12.5 | 12 | **12** |
+| -9.5 | -9 | **-10** |
+| -10.5 | -10 | **-10** |
+| -11.5 | -11 | **-12** |
+| -12.5 | -12 | **-12** |
+
+### What's going on?
+
+Look at the bolded rows. `9.5` rounds **up** to `10`, but `10.5` rounds **down** to `10`. That isn't a bug. C# uses **banker's rounding** (also called "round half to even"): when a value is *exactly* halfway, it rounds to the **nearest even number**.
+
+- `9.5` is between 9 and 10, so it goes to the even one: **10**
+- `10.5` is between 10 and 11, so it goes to the even one: **10**
+- `11.5` goes to **12**, and `12.5` goes to **12**
+
+Everything that isn't exactly `.5` rounds the way you'd expect (`.49` down, `.51` up).
+
+### Why does it work this way?
+
+Always rounding halves *up* adds a tiny bias in one direction. Over thousands of calculations (money, statistics), those errors add up. Rounding to even spreads the errors evenly in both directions.
+
+`Math.Round` uses the same banker's rounding by default. If you want the "school" way (`.5` always rounds away from zero), say so explicitly:
+
+```csharp
+Math.Round(10.5, MidpointRounding.AwayFromZero);  // 11
+```
+
+### Truncating vs rounding at a glance
+
+| Method | What it does | `9.8` becomes |
+|--------|--------------|---------------|
+| `(int)value` | Chops off the decimals | `9` |
+| `Math.Round(value)` | Rounds (half to even), still returns a `double` | `10.0` |
+| `Convert.ToInt32(value)` | Rounds (half to even) and returns an `int` | `10` |
+
+---
+
+## Common Mistakes I Want to Avoid
+
+1. **Infinite loops.** Forgetting `x++` in a `while` loop, or updating the wrong variable.
+2. **Off-by-one errors.** Arrays start at `0`, so use `i < array.Length`, not `<=`.
+3. **Mixing up `i` and `j`** in nested loops (the jagged array bug above).
+4. **Writing `jagged[i, j]`** instead of `jagged[i][j]`. They're different array types.
+5. **Expecting `(int)` to round.** It truncates.
+6. **Assuming `.5` always rounds up.** C# rounds to the nearest even number.
+7. **Forgetting the `;`** after the `while (...)` of a `do-while`.
+8. **Trying to modify the variable** inside a `foreach`.
+
+---
+
+## Practice Challenges
+
+1. **Multiplication table:** Ask for a number and print its table from 1 to 10 with a `for` loop.
+2. **Sum and average:** Store 5 numbers in an array, then use `foreach` to print the sum and average. (Hint: the average should be a `double`, so cast before dividing!)
+3. **Guessing game:** Pick a secret number and use `do-while` to keep asking until the player gets it. Add "too high" and "too low" hints.
+4. **Seating chart:** Create a 2D array of student names and print each row with nested loops.
+5. **Shape detector:** Write a list-pattern `switch` that detects arrays starting with `1`, ending with `9`, or having exactly 5 items.
+6. **Round it yourself:** Run `Math.Round` on `2.5`, `3.5`, and `-2.5`, then predict the answers before looking.
+
+---
+
+## Key Takeaways
+
+- `while` checks first, `do-while` runs at least once, `for` is best when you know the count, and `foreach` is best for walking a collection.
+- Arrays are **fixed-size**, **zero-indexed**, and live on the **heap**.
+- 2D arrays are rectangles (`grid[row, col]`), while jagged arrays are arrays of arrays with uneven rows (`jagged[row][col]`).
+- **List patterns** let a `switch` match the shape of an array, and the first matching pattern wins.
+- `(int)` **truncates**, while `Convert.ToInt32` and `Math.Round` **round half to even**.
+
+## What's Next
+
+Tomorrow I'm moving on to **methods** so I can stop repeating myself and package logic into reusable pieces. I also still owe you the `TryParse` practice from my last post.
+
+Thanks for reading! If you're learning C# too, tell me which loop you find most confusing. Follow along as I document the rest of the journey.

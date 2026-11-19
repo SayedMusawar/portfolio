@@ -104,6 +104,8 @@ portfolio/
     blog/page.tsx
     blog/[slug]/page.tsx
     blog/tag/[tag]/page.tsx
+    play/chess/page.tsx
+    play/snake/page.tsx
     resume/page.tsx
     contact/page.tsx
     api/contact/route.ts
